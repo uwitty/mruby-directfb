@@ -147,7 +147,7 @@ static mrb_value input_device_description_to_s(mrb_state *mrb, mrb_value self)
         return mrb_nil_value();
     }
 
-    snprintf(s, sizeof(s)-1, "type:%d, caps:0x%08x, min_keycode:%d, max_keycode, max_axis:%d, max_button:%d"
+    snprintf(s, sizeof(s)-1, "type:%d, caps:0x%08x, min_keycode:%d, max_keycode:%d, max_axis:%d, max_button:%d"
             , desc->type, desc->caps, desc->min_keycode, desc->max_keycode, desc->max_axis, desc->max_button);
 
     return mrb_str_new(mrb, desc->vendor, DFB_INPUT_DEVICE_DESC_VENDOR_LENGTH);
