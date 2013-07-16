@@ -49,6 +49,7 @@ static mrb_value mrb_directfb_wrap(mrb_state* mrb, struct RClass* c, IDirectFB* 
 IDirectFB* get_directfb(mrb_state* mrb, mrb_value value)
 {
     struct mrb_directfb_data* data = (struct mrb_directfb_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_type);
+    ;
     return (data != NULL)? data->dfb : NULL;
 }
 
@@ -105,6 +106,28 @@ static mrb_value directfb_release(mrb_state *mrb, mrb_value self)
         data->dfb->Release(data->dfb);
     }
     return mrb_nil_value();
+}
+
+static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
+{
+    mrb_value desc_object;
+    mrb_get_args(mrb, "o", &desc_object);
+
+    IDirectFB* dfb = get_directfb(mrb, self);
+    DFBInputDeviceDescription* desc = mrb_directfb_input_device_description_get(mrb, desc_object);
+    if ((dfb == NULL) || (desc == NULL)) {
+        return mrb_nil_value();
+    }
+
+    IDirectFBSurface* surface = NULL;
+    DFBResult ret = dfb->CreateSurface(dfb, desc, &surface);
+    if (ret) {
+        return mrb_nil_value();
+    }
+
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
+    return mrb_directfb_surface_wrap(mrb, c, surface);
 }
 
 static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
@@ -247,9 +270,11 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_define_class_method(mrb, dfb, "set_option", directfb_set_option, MRB_ARGS_REQ(2));
     mrb_define_class_method(mrb, dfb, "create", directfb_create, MRB_ARGS_NONE());
     mrb_define_class_method(mrb, dfb, "usleep", directfb_usleep, MRB_ARGS_REQ(1));
+
     mrb_define_method(mrb, dfb, "release", directfb_release, MRB_ARGS_NONE());
     mrb_define_method(mrb, dfb, "set_cooperative_level", directfb_set_cooperative_level, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "set_video_mode", directfb_set_video_mode, MRB_ARGS_REQ(3));
+    mrb_define_method(mrb, dfb, "create_surface", directfb_create_surface, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "get_display_layer", directfb_get_display_layer, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "enum_input_devices", directfb_enum_input_devices, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "suspend", directfb_suspend, MRB_ARGS_REQ(1));
