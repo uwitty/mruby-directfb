@@ -169,11 +169,218 @@ static void define_input_device_description(mrb_state* mrb, struct RClass* outer
 }
 
 
+// ============================================================================
+// IDirectFB::SurfaceDescription object - DFBResult
 
+struct mrb_directfb_surface_description_data {
+    DFBSurfaceDescription surface_description;
+};
+
+static void mrb_directfb_surface_description_free(mrb_state* mrb, void* p)
+{
+    struct mrb_directfb_surface_description_data* data = (struct mrb_directfb_surface_description_data*)p;
+    if (data != NULL) {
+        mrb_free(mrb, p);
+    }
+}
+
+static struct mrb_data_type mrb_directfb_surface_description_type = {"SurfaceDescription", mrb_directfb_surface_description_free};
+
+mrb_value mrb_directfb_surface_description_wrap(mrb_state* mrb, struct RClass* c, DFBSurfaceDescription* desc)
+{
+    struct mrb_directfb_surface_description_data* data = 
+        (struct mrb_directfb_surface_description_data*)mrb_malloc(mrb, sizeof(struct mrb_directfb_surface_description_data));
+    if (data == NULL) {
+        return mrb_nil_value();
+    }
+
+    if (desc != NULL) {
+        memcpy(&data->surface_description, desc, sizeof(data->surface_description));
+    } else {
+        memset(&data->surface_description, 0, sizeof(data->surface_description));
+    }
+
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_surface_description_type, data));
+}
+
+DFBSurfaceDescription* mrb_directfb_surface_description_get(mrb_state *mrb, mrb_value value)
+{
+    struct mrb_directfb_surface_description_data* data = 
+        (struct mrb_directfb_surface_description_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_surface_description_type);
+    return (data != NULL)? &data->surface_description : NULL;
+}
+
+static mrb_value surface_description_new(mrb_state *mrb, mrb_value self)
+{
+    return mrb_directfb_surface_description_wrap(mrb, mrb_class_ptr(self), NULL);
+}
+
+static mrb_value surface_description_flags_get(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    return mrb_fixnum_value(desc->flags);
+}
+
+static mrb_value surface_description_flags_set(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    int flags = 0;
+    mrb_get_args(mrb, "i", &flags);
+    desc->flags = flags;
+
+    return mrb_fixnum_value(desc->flags);
+}
+
+static mrb_value surface_description_caps_get(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    return mrb_fixnum_value(desc->caps);
+}
+
+static mrb_value surface_description_caps_set(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    int caps = 0;
+    mrb_get_args(mrb, "i", &caps);
+    desc->caps = caps;
+
+    return mrb_fixnum_value(desc->caps);
+}
+
+static mrb_value surface_description_width_get(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    return mrb_fixnum_value(desc->width);
+}
+
+static mrb_value surface_description_width_set(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    int width = 0;
+    mrb_get_args(mrb, "i", &width);
+    desc->width = width;
+
+    return mrb_fixnum_value(desc->width);
+}
+
+static mrb_value surface_description_height_get(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    return mrb_fixnum_value(desc->height);
+}
+
+static mrb_value surface_description_height_set(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    int height = 0;
+    mrb_get_args(mrb, "i", &height);
+    desc->height = height;
+
+    return mrb_fixnum_value(desc->height);
+}
+
+static mrb_value surface_description_pixelformat_get(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    return mrb_fixnum_value(desc->pixelformat);
+}
+
+static mrb_value surface_description_pixelformat_set(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    int pixelformat = 0;
+    mrb_get_args(mrb, "i", &pixelformat);
+    desc->pixelformat = pixelformat;
+
+    return mrb_fixnum_value(desc->pixelformat);
+}
+
+static mrb_value surface_description_resource_id_get(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    return mrb_fixnum_value(desc->resource_id);
+}
+
+static mrb_value surface_description_resource_id_set(mrb_state *mrb, mrb_value self)
+{
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, self);
+    if (desc == NULL) {
+        return mrb_nil_value();
+    }
+
+    int resource_id = 0;
+    mrb_get_args(mrb, "i", &resource_id);
+    desc->resource_id = resource_id;
+
+    return mrb_fixnum_value(desc->resource_id);
+}
+
+static void define_surface_description(mrb_state* mrb, struct RClass* outer)
+{
+    struct RClass* cls = mrb_define_class_under(mrb, outer, "SurfaceDescription", mrb->object_class);
+    mrb_define_class_method(mrb, cls, "new", surface_description_new, MRB_ARGS_NONE());
+    mrb_define_method(mrb, cls, "flags", surface_description_flags_get, MRB_ARGS_NONE());
+    mrb_define_method(mrb, cls, "flags=", surface_description_flags_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, cls, "caps", surface_description_caps_get, MRB_ARGS_NONE());
+    mrb_define_method(mrb, cls, "caps=", surface_description_caps_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, cls, "width", surface_description_width_get, MRB_ARGS_NONE());
+    mrb_define_method(mrb, cls, "width=", surface_description_width_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, cls, "height", surface_description_height_get, MRB_ARGS_NONE());
+    mrb_define_method(mrb, cls, "height=", surface_description_height_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, cls, "pixelformat", surface_description_pixelformat_get, MRB_ARGS_NONE());
+    mrb_define_method(mrb, cls, "pixelformat=", surface_description_pixelformat_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, cls, "resource_id", surface_description_resource_id_get, MRB_ARGS_NONE());
+    mrb_define_method(mrb, cls, "resource_id=", surface_description_resource_id_set, MRB_ARGS_REQ(1));
+}
 
 
 void mrb_directfb_define_descriptions(mrb_state* mrb, struct RClass* outer)
 {
     define_input_device_description(mrb, outer);
+    define_surface_description(mrb, outer);
 }
 
