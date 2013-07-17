@@ -86,6 +86,19 @@ static mrb_value surface_fill_rectangle(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(ret);
 }
 
+static mrb_value surface_stretch_blit(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = get_surface(mrb, self);
+    DFBResult ret = -1;
+    if (surface != NULL) {
+        mrb_value source_object;
+        mrb_get_args(mrb, "o", &source_object);
+        IDirectFBSurface* source = get_surface(mrb, source_object);
+        ret = surface->StretchBlit(surface, source, NULL, NULL);
+    }
+    return mrb_fixnum_value(ret);
+}
+
 static mrb_value surface_flip(mrb_state *mrb, mrb_value self)
 {
     IDirectFBSurface* surface = get_surface(mrb, self);
@@ -107,6 +120,7 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
 
     mrb_define_method(mrb, surface, "release", surface_release, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "set_color", surface_set_color, MRB_ARGS_REQ(4));
+    mrb_define_method(mrb, surface, "stretch_blit", surface_stretch_blit, MRB_ARGS_REQ(4));
     mrb_define_method(mrb, surface, "fill_rectangle", surface_fill_rectangle, MRB_ARGS_REQ(4));
     mrb_define_method(mrb, surface, "flip", surface_flip, MRB_ARGS_OPT(2));
 }
