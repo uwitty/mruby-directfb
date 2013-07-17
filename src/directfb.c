@@ -110,6 +110,29 @@ static mrb_value directfb_release(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
 {
+#if 1
+    mrb_value desc_object;
+    mrb_get_args(mrb, "o", &desc_object);
+
+    DFBSurfaceDescription desc;
+    mrb_directfb_surface_description_get(mrb, desc_object, &desc);
+
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb == NULL) {
+        return mrb_nil_value();
+    }
+
+    IDirectFBSurface* surface = NULL;
+    DFBResult ret = dfb->CreateSurface(dfb, &desc, &surface);
+    if (ret) {
+        //DirectFBError("CreateSurface", ret);
+        return mrb_nil_value();
+    }
+
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
+    return mrb_directfb_surface_wrap(mrb, c, surface);
+#else
     mrb_value desc_object;
     mrb_get_args(mrb, "o", &desc_object);
 
@@ -129,6 +152,7 @@ static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
     struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
     return mrb_directfb_surface_wrap(mrb, c, surface);
+#endif
 }
 
 static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
@@ -188,9 +212,7 @@ static DFBEnumerationResult enum_input_devices_callback(DFBInputDeviceID device_
     printf("%s(device_id:%d)\n", __func__, device_id);
     mrb_value args[2];
     args[0] = mrb_fixnum_value(device_id);
-    struct RClass* class_directfb = mrb_class_get(arg->mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(arg->mrb, mrb_obj_value(class_directfb), mrb_intern(arg->mrb, "InputDeviceDescription")));
-    args[1] = mrb_directfb_input_device_description_wrap(arg->mrb, c, &desc);
+    args[1] = mrb_directfb_input_device_description_new(arg->mrb, &desc);
     mrb_yield_argv(arg->mrb, *(arg->block), 2, args);
     return 0;
 }
@@ -261,7 +283,6 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     struct RClass* dfb = mrb_define_class(mrb, "DirectFB", mrb->object_class);
 
     mrb_directfb_define_constants(mrb, dfb);
-    mrb_directfb_define_descriptions(mrb, dfb);
     mrb_directfb_define_misc(mrb, dfb);
     mrb_directfb_define_surface(mrb, dfb);
     mrb_directfb_define_display_layer(mrb, dfb);
