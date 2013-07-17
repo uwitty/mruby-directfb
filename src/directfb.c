@@ -114,7 +114,7 @@ static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
     mrb_get_args(mrb, "o", &desc_object);
 
     IDirectFB* dfb = get_directfb(mrb, self);
-    DFBInputDeviceDescription* desc = mrb_directfb_input_device_description_get(mrb, desc_object);
+    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, desc_object);
     if ((dfb == NULL) || (desc == NULL)) {
         return mrb_nil_value();
     }
@@ -122,6 +122,7 @@ static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
     IDirectFBSurface* surface = NULL;
     DFBResult ret = dfb->CreateSurface(dfb, desc, &surface);
     if (ret) {
+        //DirectFBError("CreateSurface", ret);
         return mrb_nil_value();
     }
 
