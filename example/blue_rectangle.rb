@@ -1,14 +1,16 @@
-print DirectFB.to_s + '.DFXL_NONE: ' + DirectFB::DFXL_NONE.to_s + "\n"
+include DirectFB::Constants
+
+print DirectFB.to_s + '.DFXL_NONE: ' + DFXL_NONE.to_s + "\n"
 
 ret = DirectFB::init()
-DirectFB::error('DirectFB::init()', ret)
+DirectFB::error('init()', ret)
 ret = DirectFB::set_option('bg-none', '')
 ret = DirectFB::set_option('no-cursor', '')
 dfb = DirectFB::create()
 
-layer = dfb.get_display_layer(DirectFB::DLID_PRIMARY)
+layer = dfb.get_display_layer(DLID_PRIMARY)
 print "get display layer: #{layer.class.to_s}.\n"
-layer.set_cooperative_level(DirectFB::DLSCL_ADMINISTRATIVE)
+layer.set_cooperative_level(DLSCL_ADMINISTRATIVE)
 
 surface = layer.get_surface()
 print "get surface: #{surface.class.to_s}.\n"
