@@ -116,3 +116,37 @@ void mrb_directfb_font_description_get(mrb_state *mrb, mrb_value hash, DFBFontDe
 #endif
 }
 
+mrb_value mrb_directfb_image_description_new(mrb_state *mrb, const DFBImageDescription* desc)
+{
+    mrb_value hash = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")), mrb_fixnum_value(desc->caps));
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_r")), mrb_fixnum_value(desc->colorkey_r));
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_g")), mrb_fixnum_value(desc->colorkey_g));
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_b")), mrb_fixnum_value(desc->colorkey_b));
+
+    return hash;
+}
+
+void mrb_directfb_image_description_get(mrb_state *mrb, mrb_value hash, DFBImageDescription* desc)
+{
+    memset(desc, 0, sizeof(*desc));
+
+    mrb_value caps       = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")));
+    desc->caps = mrb_fixnum(caps);
+    mrb_value colorkey_r = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_r")));
+    desc->colorkey_r = mrb_fixnum(colorkey_r);
+    mrb_value colorkey_g = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_g")));
+    desc->colorkey_g = mrb_fixnum(colorkey_g);
+    mrb_value colorkey_b = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_b")));
+    desc->colorkey_b = mrb_fixnum(colorkey_b);
+
+#if 1
+    printf("DFBImageDescription:%p\n", desc);
+    printf("  caps:0x%08x\n", desc->caps);
+    printf("  colorkey_r:0x%02x\n", desc->colorkey_r);
+    printf("  colorkey_g:0x%02x\n", desc->colorkey_g);
+    printf("  colorkey_b:0x%02x\n", desc->colorkey_b);
+#endif
+}
+
