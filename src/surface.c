@@ -13,6 +13,7 @@
 #include "directfb_constants.h"
 #include "directfb_descriptions.h"
 #include "directfb_misc.h"
+#include "directfb_font.h"
 
 struct mrb_directfb_surface_data {
     IDirectFBSurface* surface;
@@ -44,7 +45,10 @@ mrb_value mrb_directfb_surface_wrap(mrb_state* mrb, struct RClass* c, IDirectFBS
     data->surface = surface;
     data->width  = width;
     data->height = height;
-    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_surface_type, data));
+
+    mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_surface_type, data));
+    mrb_iv_set(mrb, obj, mrb_intern_cstr(mrb, "font"), mrb_nil_value());
+    return obj;
 }
 
 static IDirectFBSurface* get_surface(mrb_state *mrb, mrb_value value)
@@ -137,6 +141,68 @@ static mrb_value surface_draw_line(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(ret);
 }
 
+static mrb_value surface_set_font(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = get_surface(mrb, self);
+    DFBResult ret = -1;
+    if (surface != NULL) {
+        mrb_value font_object;
+        mrb_get_args(mrb, "o", &font_object);
+        IDirectFBFont* font = mrb_directfb_font_get(mrb, font_object);
+        ret = surface->SetFont(surface, font);
+        mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "font"), font_object);
+    }
+    return mrb_fixnum_value(ret);
+}
+
+static mrb_value surface_get_font(mrb_state *mrb, mrb_value self)
+{
+    return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "font"));
+}
+
+static mrb_value surface_draw_string(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = get_surface(mrb, self);
+    DFBResult ret = -1;
+    if (surface != NULL) {
+        char* s;
+        mrb_int x;
+        mrb_int y;
+        mrb_int flags;
+        mrb_get_args(mrb, "ziii", &s, &x, &y, &flags);
+        int bytes = strlen(s);
+        ret = surface->DrawString(surface, s, bytes, x, y, flags);
+    }
+    return mrb_fixnum_value(ret);
+}
+
+static mrb_value surface_draw_glyph(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = get_surface(mrb, self);
+    DFBResult ret = -1;
+    if (surface != NULL) {
+        mrb_int glyph;
+        mrb_int x;
+        mrb_int y;
+        mrb_int flags;
+        mrb_get_args(mrb, "iiii", &glyph, &x, &y, &flags);
+        ret = surface->DrawGlyph(surface, glyph, x, y, flags);
+    }
+    return mrb_fixnum_value(ret);
+}
+
+static mrb_value surface_set_encoding(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = get_surface(mrb, self);
+    DFBResult ret = -1;
+    if (surface != NULL) {
+        mrb_int encoding;
+        mrb_get_args(mrb, "i", &encoding);
+        ret = surface->SetEncoding(surface, encoding);
+    }
+    return mrb_fixnum_value(ret);
+}
+
 static mrb_value surface_set_blitting_flags(mrb_state *mrb, mrb_value self)
 {
     IDirectFBSurface* surface = get_surface(mrb, self);
@@ -191,6 +257,11 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
     mrb_define_method(mrb, surface, "set_drawing_flags", surface_set_drawing_flags, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, surface, "fill_rectangle", surface_fill_rectangle, MRB_ARGS_REQ(4));
     mrb_define_method(mrb, surface, "draw_line", surface_draw_line, MRB_ARGS_REQ(4));
+    mrb_define_method(mrb, surface, "set_font", surface_set_font, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, surface, "get_font", surface_get_font, MRB_ARGS_NONE());
+    mrb_define_method(mrb, surface, "draw_string", surface_draw_string, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, surface, "draw_glyph", surface_draw_glyph, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, surface, "set_encoding", surface_set_encoding, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, surface, "flip", surface_flip, MRB_ARGS_OPT(2));
 }
 
