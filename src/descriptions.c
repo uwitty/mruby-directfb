@@ -36,27 +36,27 @@ mrb_value mrb_directfb_input_device_description_new(mrb_state *mrb, const DFBInp
 void mrb_directfb_surface_description_get(mrb_state *mrb, mrb_value hash, DFBSurfaceDescription* desc)
 {
     memset(desc, 0, sizeof(*desc));
-    mrb_value caps = mrb_iv_get(mrb, hash, mrb_intern_cstr(mrb, "caps"));
+    mrb_value caps = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")));
     if (!mrb_nil_p(caps)) {
         desc->flags |= DSDESC_CAPS;
         desc->caps = mrb_fixnum(caps);
     }
-    mrb_value width = mrb_iv_get(mrb, hash, mrb_intern_cstr(mrb, "width"));
+    mrb_value width = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "width")));
     if (!mrb_nil_p(width)) {
         desc->flags |= DSDESC_WIDTH;
         desc->width = mrb_fixnum(width);
     }
-    mrb_value height = mrb_iv_get(mrb, hash, mrb_intern_cstr(mrb, "height"));
+    mrb_value height = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "height")));
     if (!mrb_nil_p(height)) {
         desc->flags |= DSDESC_HEIGHT;
         desc->height = mrb_fixnum(height);
     }
-    mrb_value pixelformat = mrb_iv_get(mrb, hash, mrb_intern_cstr(mrb, "pixelformat"));
+    mrb_value pixelformat = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "pixelformat")));
     if (!mrb_nil_p(pixelformat)) {
         desc->flags |= DSDESC_PIXELFORMAT;
         desc->pixelformat = mrb_fixnum(pixelformat);
     }
-    mrb_value resource_id = mrb_iv_get(mrb, hash, mrb_intern_cstr(mrb, "resource_id"));
+    mrb_value resource_id = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "resource_id")));
     if (!mrb_nil_p(resource_id)) {
         desc->flags |= DSDESC_RESOURCE_ID;
         desc->resource_id = mrb_fixnum(resource_id);
@@ -71,6 +71,26 @@ void mrb_directfb_surface_description_get(mrb_state *mrb, mrb_value hash, DFBSur
             (__desc__)->__name__ = mrb_fixnum(__name__); \
         } \
     } while(0);
+
+#define DESC_INT_VALUE_TO_MRBHASH(__mrb__, __hash__, __desc__, __name__, __flag__) \
+    do { \
+        if (((__desc__)->flags & (__flag__)) != 0) { \
+            mrb_hash_set((__mrb__), (__hash__), mrb_symbol_value(mrb_intern_cstr((__mrb__), #__name__)), mrb_fixnum_value((__desc__)->__name__)); \
+        } \
+    } while(0);
+
+mrb_value mrb_directfb_surface_description_new(mrb_state *mrb, const DFBSurfaceDescription* desc)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, desc, caps       , DSDESC_CAPS);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, desc, width      , DSDESC_WIDTH);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, desc, height     , DSDESC_HEIGHT);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, desc, pixelformat, DSDESC_PIXELFORMAT);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, desc, resource_id, DSDESC_RESOURCE_ID);
+
+    return value;
+}
 
 void mrb_directfb_font_description_get(mrb_state *mrb, mrb_value hash, DFBFontDescription* desc)
 {
