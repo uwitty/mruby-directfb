@@ -14,6 +14,7 @@
 #include "directfb_descriptions.h"
 #include "directfb_display_layer.h"
 #include "directfb_surface.h"
+#include "directfb_font.h"
 
 // ============================================================================
 // IDirectFB object
@@ -232,6 +233,28 @@ static mrb_value directfb_enum_input_devices(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(ret);
 }
 
+static mrb_value directfb_create_font(mrb_state *mrb, mrb_value self)
+{
+    DFBResult ret = -1;
+    char* fontname;
+    mrb_value desc_object;
+
+    mrb_get_args(mrb, "zo", &fontname, &desc_object);
+
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        IDirectFBFont* font;
+        DFBFontDescription desc;
+        mrb_directfb_font_description_get(mrb, desc_object, &desc);
+        if (!dfb->CreateFont(dfb, fontname, &desc, &font)) {
+            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Font")));
+            return mrb_directfb_font_wrap(mrb, c, font);
+        }
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value directfb_suspend(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
@@ -286,6 +309,7 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_directfb_define_misc(mrb, dfb);
     mrb_directfb_define_surface(mrb, dfb);
     mrb_directfb_define_display_layer(mrb, dfb);
+    mrb_directfb_define_font(mrb, dfb);
 
     mrb_define_class_method(mrb, dfb, "init", directfb_init, MRB_ARGS_NONE());
     mrb_define_class_method(mrb, dfb, "error", directfb_error, MRB_ARGS_REQ(2));
@@ -299,6 +323,7 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_define_method(mrb, dfb, "create_surface", directfb_create_surface, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "get_display_layer", directfb_get_display_layer, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "enum_input_devices", directfb_enum_input_devices, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, dfb, "create_font", directfb_create_font, MRB_ARGS_REQ(2));
     mrb_define_method(mrb, dfb, "suspend", directfb_suspend, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "resume", directfb_resume, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "wait_idle", directfb_wait_idle, MRB_ARGS_REQ(1));
