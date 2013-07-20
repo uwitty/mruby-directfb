@@ -13,3 +13,5 @@ void mrb_directfb_input_device_description_get(mrb_state *mrb, mrb_value value, 
 mrb_value mrb_directfb_input_device_description_new(mrb_state *mrb, const DFBInputDeviceDescription* desc);
 
 void mrb_directfb_surface_description_get(mrb_state *mrb, mrb_value value, DFBSurfaceDescription* desc);
+
+void mrb_directfb_font_description_get(mrb_state *mrb, mrb_value hash, DFBFontDescription* desc);

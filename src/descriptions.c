@@ -63,3 +63,36 @@ void mrb_directfb_surface_description_get(mrb_state *mrb, mrb_value hash, DFBSur
     }
 }
 
+#define DESC_INT_VALUE_TO_CSTRUCT(__mrb__, __hash__, __desc__, __name__, __flag__) \
+    do { \
+        mrb_value __name__ = mrb_hash_get((__mrb__), (__hash__), mrb_symbol_value(mrb_intern_cstr((__mrb__), #__name__))); \
+        if (!mrb_nil_p(__name__)) { \
+            (__desc__)->flags |= (__flag__); \
+            (__desc__)->__name__ = mrb_fixnum(__name__); \
+        } \
+    } while(0);
+
+void mrb_directfb_font_description_get(mrb_state *mrb, mrb_value hash, DFBFontDescription* desc)
+{
+    memset(desc, 0, sizeof(*desc));
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, attributes   , DFDESC_ATTRIBUTES);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, height       , DFDESC_HEIGHT);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, width        , DFDESC_WIDTH);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, index        , DFDESC_INDEX);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, fixed_advance, DFDESC_FIXEDADVANCE);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, fract_height , DFDESC_FRACT_HEIGHT);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, fract_width  , DFDESC_FRACT_WIDTH);
+
+#if 0
+    printf("DFBFontDescription:%p\n", desc);
+    printf("  flags:0x%08x\n", desc->flags);
+    printf("  attributes:0x%08x\n", desc->attributes);
+    printf("  height:%d\n", desc->height);
+    printf("  width:%d\n", desc->width);
+    printf("  index:%d\n", desc->index);
+    printf("  fixed_advance:%d\n", desc->fixed_advance);
+    printf("  fract_height:%d\n", desc->fract_height);
+    printf("  fract_width:%d\n", desc->fract_width);
+#endif
+}
+
