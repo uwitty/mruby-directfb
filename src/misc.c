@@ -694,20 +694,6 @@ mrb_value mrb_directfb_event_new(mrb_state* mrb, DFBEvent* event)
     };
 }
 
-// ============================================================================
-
-void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
-{
-    struct RClass* region = mrb_define_class_under(mrb, outer, "Region", mrb->object_class);
-    mrb_define_class_method(mrb, region, "new", region_new, MRB_ARGS_REQ(4));
-
-    define_rectangle(mrb, outer);
-    define_input_device_keymap_entry(mrb, outer);
-    define_input_event(mrb, outer);
-    define_window_event(mrb, outer);
-    define_video_provider_event(mrb, outer);
-}
-
 void mrb_directfb_event_get(mrb_state* mrb, mrb_value event_object, DFBEvent* event)
 {
     memset(event, 0, sizeof(*event));
@@ -720,5 +706,345 @@ void mrb_directfb_event_get(mrb_state* mrb, mrb_value event_object, DFBEvent* ev
         ) {
         memcpy(event, e, sizeof(*event));
     }
+}
+
+// ============================================================================
+// IDirectFB::EventBufferStats object - DFBEventBufferStats
+
+struct mrb_directfb_event_buffer_stats_data {
+    DFBEventBufferStats stats;
+};
+
+static void mrb_directfb_event_buffer_stats_free(mrb_state* mrb, void* p)
+{
+    struct mrb_directfb_event_buffer_stats_data* data = (struct mrb_directfb_event_buffer_stats_data*)p;
+    if (data != NULL) {
+        mrb_free(mrb, p);
+    }
+}
+
+static struct mrb_data_type mrb_directfb_event_buffer_stats_type = {"EventBufferStats", mrb_directfb_event_buffer_stats_free};
+
+mrb_value mrb_directfb_event_buffer_stats_wrap(mrb_state* mrb, struct RClass* c, DFBEventBufferStats* stats)
+{
+    struct mrb_directfb_event_buffer_stats_data* data = (struct mrb_directfb_event_buffer_stats_data*)mrb_malloc(mrb, sizeof(struct mrb_directfb_event_buffer_stats_data));
+    if (data == NULL) {
+        return mrb_nil_value();
+    }
+    memcpy(&data->stats, stats, sizeof(data->stats));
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_event_buffer_stats_type, data));
+}
+
+DFBEventBufferStats* mrb_directfb_get_event_buffer_stats(mrb_state *mrb, mrb_value value)
+{
+    struct mrb_directfb_event_buffer_stats_data* data = (struct mrb_directfb_event_buffer_stats_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_event_buffer_stats_type);
+    return (data != NULL)? &data->stats : NULL;
+}
+
+static mrb_value event_buffer_stats_num_events(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->num_events) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_input(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DFEC_INPUT) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_window(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DFEC_WINDOW) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_user(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DFEC_USER) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_universal(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DFEC_UNIVERSAL) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_videoprovider(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DFEC_VIDEOPROVIDER) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_keypress(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DIET_KEYPRESS) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_keyrelease(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DIET_KEYRELEASE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_buttonpress(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DIET_BUTTONPRESS) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_buttonrelease(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DIET_BUTTONRELEASE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_axismotion(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DIET_AXISMOTION) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_position(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_MOTION) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_size(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_SIZE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_close(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_CLOSE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_destroyed(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_DESTROYED) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_gotfocus(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_GOTFOCUS) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_lostfocus(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_LOSTFOCUS) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_keydown(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_KEYDOWN) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_keyup(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_KEYUP) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_buttondown(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_BUTTONDOWN) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_buttonup(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_BUTTONUP) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_motion(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_MOTION) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_enter(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_ENTER) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_leave(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_LEAVE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_wheel(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_WHEEL) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_position_size(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DWET_POSITION_SIZE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_started(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_STARTED) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_stopped(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_STOPPED) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_speedchange(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_SPEEDCHANGE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_streamchange(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_STREAMCHANGE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_fatalerror(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FATALERROR) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_finished(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FINISHED) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_surfacechange(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_SURFACECHANGE) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_framedecoded(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FRAMEDECODED) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_framedisplayed(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FRAMEDISPLAYED) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_dataexhausted(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_DATAEXHAUSTED) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_datalow(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_DATALOW) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_videoaction(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_VIDEOACTION) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_datahigh(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_DATAHIGH) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_buffertimelow(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_BUFFERTIMELOW) : mrb_nil_value();
+}
+
+static mrb_value event_buffer_stats_buffertimehigh(mrb_state *mrb, mrb_value self)
+{
+    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    return (stats != NULL)? mrb_fixnum_value(stats->DVPET_BUFFERTIMEHIGH) : mrb_nil_value();
+}
+
+static void define_event_buffer_stats(mrb_state* mrb, struct RClass* outer)
+{
+    struct RClass* stats = mrb_define_class_under(mrb, outer, "EventBufferStats", mrb->object_class);
+    mrb_define_method(mrb, stats, "num_events", event_buffer_stats_num_events, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "input", event_buffer_stats_input, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "window", event_buffer_stats_window, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "user", event_buffer_stats_user, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "universal", event_buffer_stats_universal, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "videoprovider", event_buffer_stats_videoprovider, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "keypress", event_buffer_stats_keypress, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "keyrelease", event_buffer_stats_keyrelease, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "buttonpress", event_buffer_stats_buttonpress, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "buttonrelease", event_buffer_stats_buttonrelease, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "axismotion", event_buffer_stats_axismotion, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "position", event_buffer_stats_position, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "size", event_buffer_stats_size, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "close", event_buffer_stats_close, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "destroyed", event_buffer_stats_destroyed, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "gotfocus", event_buffer_stats_gotfocus, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "lostfocus", event_buffer_stats_lostfocus, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "keydown", event_buffer_stats_keydown, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "keyup", event_buffer_stats_keyup, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "buttondown", event_buffer_stats_buttondown, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "buttonup", event_buffer_stats_buttonup, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "motion", event_buffer_stats_motion, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "enter", event_buffer_stats_enter, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "leave", event_buffer_stats_leave, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "wheel", event_buffer_stats_wheel, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "position_size", event_buffer_stats_position_size, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "started", event_buffer_stats_started, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "stopped", event_buffer_stats_stopped, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "speedchange", event_buffer_stats_speedchange, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "streamchange", event_buffer_stats_streamchange, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "fatalerror", event_buffer_stats_fatalerror, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "finished", event_buffer_stats_finished, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "surfacechange", event_buffer_stats_surfacechange, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "framedecoded", event_buffer_stats_framedecoded, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "framedisplayed", event_buffer_stats_framedisplayed, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "dataexhausted", event_buffer_stats_dataexhausted, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "datalow", event_buffer_stats_datalow, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "videoaction", event_buffer_stats_videoaction, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "datahigh", event_buffer_stats_datahigh, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "buffertimelow", event_buffer_stats_buffertimelow, MRB_ARGS_NONE());
+    mrb_define_method(mrb, stats, "buffertimehigh", event_buffer_stats_buffertimehigh, MRB_ARGS_NONE());
+}
+
+// ============================================================================
+
+void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
+{
+    struct RClass* region = mrb_define_class_under(mrb, outer, "Region", mrb->object_class);
+    mrb_define_class_method(mrb, region, "new", region_new, MRB_ARGS_REQ(4));
+
+    define_rectangle(mrb, outer);
+    define_input_device_keymap_entry(mrb, outer);
+    define_input_event(mrb, outer);
+    define_window_event(mrb, outer);
+    define_video_provider_event(mrb, outer);
+    define_event_buffer_stats(mrb, outer);
 }
 
