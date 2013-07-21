@@ -17,6 +17,7 @@
 #include "directfb_font.h"
 #include "directfb_image_provider.h"
 #include "directfb_input_device.h"
+#include "directfb_event_buffer.h"
 
 // ============================================================================
 // IDirectFB object
@@ -348,6 +349,7 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_directfb_define_font(mrb, dfb);
     mrb_directfb_define_image_provider(mrb, dfb);
     mrb_directfb_define_input_device(mrb, dfb);
+    mrb_directfb_define_event_buffer(mrb, dfb);
 
     mrb_define_class_method(mrb, dfb, "init", directfb_init, MRB_ARGS_NONE());
     mrb_define_class_method(mrb, dfb, "error", directfb_error, MRB_ARGS_REQ(2));
