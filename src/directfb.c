@@ -16,6 +16,7 @@
 #include "directfb_surface.h"
 #include "directfb_font.h"
 #include "directfb_image_provider.h"
+#include "directfb_input_device.h"
 
 // ============================================================================
 // IDirectFB object
@@ -234,6 +235,23 @@ static mrb_value directfb_enum_input_devices(mrb_state *mrb, mrb_value self)
     return mrb_fixnum_value(ret);
 }
 
+static mrb_value directfb_get_input_device(mrb_state *mrb, mrb_value self)
+{
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        mrb_int device_id;
+        mrb_get_args(mrb, "i", &device_id);
+        IDirectFBInputDevice* device;
+        DFBResult ret = dfb->GetInputDevice(dfb, device_id, &device);
+        if (!ret) {
+            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputDevice")));
+            return mrb_directfb_input_device_wrap(mrb, c, device);
+        }
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value directfb_create_image_provider(mrb_state *mrb, mrb_value self)
 {
     IDirectFB* dfb = get_directfb(mrb, self);
@@ -329,6 +347,7 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_directfb_define_display_layer(mrb, dfb);
     mrb_directfb_define_font(mrb, dfb);
     mrb_directfb_define_image_provider(mrb, dfb);
+    mrb_directfb_define_input_device(mrb, dfb);
 
     mrb_define_class_method(mrb, dfb, "init", directfb_init, MRB_ARGS_NONE());
     mrb_define_class_method(mrb, dfb, "error", directfb_error, MRB_ARGS_REQ(2));
@@ -342,6 +361,7 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_define_method(mrb, dfb, "create_surface", directfb_create_surface, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "get_display_layer", directfb_get_display_layer, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "enum_input_devices", directfb_enum_input_devices, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, dfb, "get_input_device", directfb_get_input_device, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "create_image_provider", directfb_create_image_provider, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "create_font", directfb_create_font, MRB_ARGS_REQ(2));
     mrb_define_method(mrb, dfb, "suspend", directfb_suspend, MRB_ARGS_REQ(1));
