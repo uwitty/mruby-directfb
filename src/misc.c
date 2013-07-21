@@ -4,6 +4,7 @@
 #include <mruby/data.h>
 #include <mruby/class.h>
 #include <mruby/variable.h>
+#include <mruby/array.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -180,6 +181,80 @@ static void define_rectangle(mrb_state* mrb, struct RClass* outer)
 }
 
 // ============================================================================
+// IDirectFB::InputDeviceKeymapEntry object - DFBInputDeviceKeymapEntry
+
+struct mrb_directfb_input_device_keymap_entry_data {
+    DFBInputDeviceKeymapEntry input_device_keymap_entry;
+};
+
+static void mrb_directfb_input_device_keymap_entry_free(mrb_state* mrb, void* p)
+{
+    struct mrb_directfb_input_device_keymap_entry_data* data = (struct mrb_directfb_input_device_keymap_entry_data*)p;
+    if (data != NULL) {
+        mrb_free(mrb, p);
+    }
+}
+
+static struct mrb_data_type mrb_directfb_input_device_keymap_entry_type = {"InputDeviceKeymapEntry", mrb_directfb_input_device_keymap_entry_free};
+
+mrb_value mrb_directfb_input_device_keymap_entry_wrap(mrb_state* mrb, struct RClass* c, DFBInputDeviceKeymapEntry* entry)
+{
+    struct mrb_directfb_input_device_keymap_entry_data* data = (struct mrb_directfb_input_device_keymap_entry_data*)mrb_malloc(mrb, sizeof(struct mrb_directfb_input_device_keymap_entry_data));
+    if (data == NULL) {
+        return mrb_nil_value();
+    }
+    memcpy(&data->input_device_keymap_entry, entry, sizeof(data->input_device_keymap_entry));
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_input_device_keymap_entry_type, data));
+}
+
+DFBInputDeviceKeymapEntry* mrb_directfb_get_input_device_keymap_entry(mrb_state *mrb, mrb_value value)
+{
+    struct mrb_directfb_input_device_keymap_entry_data* data = (struct mrb_directfb_input_device_keymap_entry_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_input_device_keymap_entry_type);
+    return (data != NULL)? &data->input_device_keymap_entry : NULL;
+}
+
+static mrb_value input_device_keymap_entry_code(mrb_state *mrb, mrb_value self)
+{
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    return (entry != NULL)? mrb_fixnum_value(entry->code) : mrb_nil_value();
+}
+
+static mrb_value input_device_keymap_entry_locks(mrb_state *mrb, mrb_value self)
+{
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    return (entry != NULL)? mrb_fixnum_value(entry->locks) : mrb_nil_value();
+}
+
+static mrb_value input_device_keymap_entry_identifier(mrb_state *mrb, mrb_value self)
+{
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    return (entry != NULL)? mrb_fixnum_value(entry->identifier) : mrb_nil_value();
+}
+
+static mrb_value input_device_keymap_entry_symbols(mrb_state *mrb, mrb_value self)
+{
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    if (entry != NULL) {
+        mrb_value* a = mrb_malloc(mrb, (DIKSI_LAST+1)*sizeof(mrb_value));
+        int i;
+        for (i = 0; i < DIKSI_LAST+1; i++) {
+            a[i] = mrb_fixnum_value(entry->symbols[i]);
+        }
+        return mrb_ary_new_from_values(mrb, DIKSI_LAST+1, a);
+    }
+    return mrb_nil_value();
+}
+
+static void define_input_device_keymap_entry(mrb_state* mrb, struct RClass* outer)
+{
+    struct RClass* input_device_keymap_entry = mrb_define_class_under(mrb, outer, "InputDeviceKeymapEntry", mrb->object_class);
+    mrb_define_method(mrb, input_device_keymap_entry, "code", input_device_keymap_entry_code, MRB_ARGS_NONE());
+    mrb_define_method(mrb, input_device_keymap_entry, "locks", input_device_keymap_entry_locks, MRB_ARGS_NONE());
+    mrb_define_method(mrb, input_device_keymap_entry, "identifier", input_device_keymap_entry_identifier, MRB_ARGS_NONE());
+    mrb_define_method(mrb, input_device_keymap_entry, "symbols", input_device_keymap_entry_symbols, MRB_ARGS_NONE());
+}
+
+// ============================================================================
 
 void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
 {
@@ -187,5 +262,6 @@ void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
     mrb_define_class_method(mrb, region, "new", region_new, MRB_ARGS_REQ(4));
 
     define_rectangle(mrb, outer);
+    define_input_device_keymap_entry(mrb, outer);
 }
 
