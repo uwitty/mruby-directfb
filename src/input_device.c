@@ -11,7 +11,7 @@
 #include <directfb.h>
 
 #include "directfb_input_device.h"
-#include "directfb_surface.h"
+#include "directfb_event_buffer.h"
 #include "directfb_descriptions.h"
 #include "directfb_misc.h"
 
@@ -114,6 +114,18 @@ static mrb_value input_device_get_keymap_entry(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_create_event_buffer(mrb_state *mrb, mrb_value self)
 {
+    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
+    if ((data != NULL) && (data->input_device != NULL)) {
+        IDirectFBInputDevice* device = data->input_device;
+
+        IDirectFBEventBuffer* event_buffer;
+        DFBResult ret = device->CreateEventBuffer(device, &event_buffer);
+        if (!ret) {
+            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "EventBuffer")));
+            return mrb_directfb_event_buffer_wrap(mrb, c, event_buffer);
+        }
+    }
     return mrb_nil_value();
 }
 
