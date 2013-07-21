@@ -22,5 +22,7 @@ DFBInputDeviceKeymapEntry* mrb_directfb_get_input_device_keymap_entry(mrb_state 
 mrb_value mrb_directfb_input_event_wrap(mrb_state* mrb, struct RClass* c, DFBInputEvent* event);
 DFBInputEvent* mrb_directfb_get_input_event(mrb_state *mrb, mrb_value value);
 mrb_value mrb_directfb_event_new(mrb_state* mrb, DFBEvent* event);
+void mrb_directfb_event_get(mrb_state* mrb, mrb_value event_object, DFBEvent* event);
+
 
 void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer);

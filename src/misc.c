@@ -708,3 +708,17 @@ void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
     define_video_provider_event(mrb, outer);
 }
 
+void mrb_directfb_event_get(mrb_state* mrb, mrb_value event_object, DFBEvent* event)
+{
+    memset(event, 0, sizeof(*event));
+
+    DFBEvent* e = NULL;
+
+    if (   ((e = (DFBEvent*)mrb_directfb_get_input_event(mrb, event_object)) != NULL)
+        || ((e = (DFBEvent*)mrb_directfb_get_window_event(mrb, event_object)) != NULL)
+        || ((e = (DFBEvent*)mrb_directfb_get_video_provider_event(mrb, event_object)) != NULL)
+        ) {
+        memcpy(event, e, sizeof(*event));
+    }
+}
+
