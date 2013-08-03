@@ -126,16 +126,18 @@ static mrb_value image_provider_render_to(mrb_state *mrb, mrb_value self)
 
 static DIRenderCallbackResult render_callback(DFBRectangle* rect, void* callbackdata)
 {
-    printf("c %s()\n", __func__);
+    //printf("c %s()\n", __func__);
     struct mrb_directfb_image_provider_data* data = (struct mrb_directfb_image_provider_data*)callbackdata;
     if (data != NULL) {
         mrb_state* mrb = data->context.mrb;
         mrb_value block = mrb_iv_get(mrb, data->context.self, mrb_intern_cstr(mrb, "internal_context_callback"));
         if (!mrb_nil_p(block)) {
+            int ai = mrb_gc_arena_save(mrb);
             struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
             struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Rectangle")));
             mrb_value rect_object = mrb_directfb_rectangle_wrap(mrb, c, rect->x, rect->y, rect->w, rect->h);
             mrb_yield(mrb, block, rect_object);
+            mrb_gc_arena_restore(mrb, ai);
         }
     }
     return 0;
