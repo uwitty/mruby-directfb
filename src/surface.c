@@ -35,6 +35,13 @@ static void mrb_directfb_surface_free(mrb_state* mrb, void* p)
 
 static struct mrb_data_type mrb_directfb_surface_type = {"Surface", mrb_directfb_surface_free};
 
+mrb_value mrb_directfb_surface_value(mrb_state* mrb, IDirectFBSurface* surface)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
+    return mrb_directfb_surface_wrap(mrb, c, surface);
+}
+
 mrb_value mrb_directfb_surface_wrap(mrb_state* mrb, struct RClass* c, IDirectFBSurface* surface)
 {
     int width = 0;
@@ -51,7 +58,7 @@ mrb_value mrb_directfb_surface_wrap(mrb_state* mrb, struct RClass* c, IDirectFBS
     return obj;
 }
 
-IDirectFBSurface* mrb_directfb_get_surface(mrb_state *mrb, mrb_value value)
+IDirectFBSurface* mrb_directfb_surface(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_surface_type);
     if (data != NULL) {
@@ -76,7 +83,7 @@ static mrb_value surface_release(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_capabilities(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
         DFBSurfaceCapabilities caps;
         DFBResult ret = surface->GetCapabilities(surface, &caps);
@@ -89,7 +96,7 @@ static mrb_value surface_capabilities(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_x(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
         int x, dummy;
         DFBResult ret = surface->GetPosition(surface, &x, &dummy);
@@ -102,7 +109,7 @@ static mrb_value surface_x(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_y(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
         int y, dummy;
         DFBResult ret = surface->GetPosition(surface, &dummy, &y);
@@ -133,7 +140,7 @@ static mrb_value surface_height(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_pixel_format(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
         DFBSurfacePixelFormat format;
         DFBResult ret = surface->GetPixelFormat(surface, &format);
@@ -146,13 +153,13 @@ static mrb_value surface_pixel_format(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_acceleration_mask(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
         DFBAccelerationMask mask;
         IDirectFBSurface* source = NULL;
         mrb_value source_object;
         if (mrb_get_args(mrb, "|o", &source_object) > 0) {
-            source = mrb_directfb_get_surface(mrb, source_object);
+            source = mrb_directfb_surface(mrb, source_object);
         }
 
         DFBResult ret = surface->GetAccelerationMask(surface, source, &mask);
@@ -165,20 +172,20 @@ static mrb_value surface_acceleration_mask(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_flip(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_value o;
         mrb_int flags = 0;
         mrb_get_args(mrb, "|oi", &o, &flags);
-        ret = surface->Flip(surface, mrb_directfb_get_region(mrb, o), flags);
+        ret = surface->Flip(surface, mrb_directfb_region(mrb, o), flags);
     }
     return mrb_fixnum_value(ret);
 }
 
 static mrb_value surface_clear(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int r, g, b, a;
@@ -190,12 +197,12 @@ static mrb_value surface_clear(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_set_clip(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_value clip_object;
         mrb_get_args(mrb, "o", &clip_object);
-        const DFBRegion* clip = mrb_directfb_get_region(mrb, clip_object);
+        const DFBRegion* clip = mrb_directfb_region(mrb, clip_object);
         ret = surface->SetClip(surface, clip);
     }
     return mrb_fixnum_value(ret);
@@ -203,15 +210,13 @@ static mrb_value surface_set_clip(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_get_clip(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         DFBRegion clip;
         ret = surface->GetClip(surface, &clip);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Region")));
-            return mrb_directfb_region_wrap(mrb, c, clip.x1, clip.y1, clip.x2, clip.y2);
+            return mrb_directfb_region_value(mrb, clip.x1, clip.y1, clip.x2, clip.y2);
         }
     }
     return mrb_fixnum_value(ret);
@@ -219,7 +224,7 @@ static mrb_value surface_get_clip(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_set_color(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int r, g, b, a;
@@ -231,7 +236,7 @@ static mrb_value surface_set_color(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_set_porter_duff(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int rule;
@@ -243,7 +248,7 @@ static mrb_value surface_set_porter_duff(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_set_blitting_flags(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int flags;
@@ -255,7 +260,7 @@ static mrb_value surface_set_blitting_flags(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_blit(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_value source_object;
@@ -263,8 +268,8 @@ static mrb_value surface_blit(mrb_state *mrb, mrb_value self)
         mrb_int x;
         mrb_int y;
         mrb_get_args(mrb, "ooii", &source_object, &rect_object, &x, &y);
-        IDirectFBSurface* source = mrb_directfb_get_surface(mrb, source_object);
-        DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, rect_object);
+        IDirectFBSurface* source = mrb_directfb_surface(mrb, source_object);
+        DFBRectangle* rect = mrb_directfb_rectangle(mrb, rect_object);
         ret = surface->Blit(surface, source, rect, x, y);
     }
     return mrb_fixnum_value(ret);
@@ -272,7 +277,7 @@ static mrb_value surface_blit(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_tile_blit(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_value source_object;
@@ -280,8 +285,8 @@ static mrb_value surface_tile_blit(mrb_state *mrb, mrb_value self)
         mrb_int x;
         mrb_int y;
         mrb_get_args(mrb, "ooii", &source_object, &rect_object, &x, &y);
-        IDirectFBSurface* source = mrb_directfb_get_surface(mrb, source_object);
-        DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, rect_object);
+        IDirectFBSurface* source = mrb_directfb_surface(mrb, source_object);
+        DFBRectangle* rect = mrb_directfb_rectangle(mrb, rect_object);
         ret = surface->TileBlit(surface, source, rect, x, y);
     }
     return mrb_fixnum_value(ret);
@@ -289,12 +294,12 @@ static mrb_value surface_tile_blit(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_stretch_blit(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_value source_object;
         mrb_get_args(mrb, "o", &source_object);
-        IDirectFBSurface* source = mrb_directfb_get_surface(mrb, source_object);
+        IDirectFBSurface* source = mrb_directfb_surface(mrb, source_object);
         ret = surface->StretchBlit(surface, source, NULL, NULL);
     }
     return mrb_fixnum_value(ret);
@@ -302,7 +307,7 @@ static mrb_value surface_stretch_blit(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_set_drawing_flags(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int flags;
@@ -314,7 +319,7 @@ static mrb_value surface_set_drawing_flags(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_fill_rectangle(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int x, y, width, height;
@@ -326,7 +331,7 @@ static mrb_value surface_fill_rectangle(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_draw_line(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int x1, y1, x2, y2;
@@ -338,7 +343,7 @@ static mrb_value surface_draw_line(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_fill_triangle(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int x1, y1, x2, y2, x3, y3;
@@ -350,12 +355,12 @@ static mrb_value surface_fill_triangle(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_set_font(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_value font_object;
         mrb_get_args(mrb, "o", &font_object);
-        IDirectFBFont* font = mrb_directfb_font_get(mrb, font_object);
+        IDirectFBFont* font = mrb_directfb_font(mrb, font_object);
         ret = surface->SetFont(surface, font);
         mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "font"), font_object);
     }
@@ -369,7 +374,7 @@ static mrb_value surface_get_font(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_draw_string(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         char* s;
@@ -385,7 +390,7 @@ static mrb_value surface_draw_string(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_draw_glyph(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int glyph;
@@ -400,7 +405,7 @@ static mrb_value surface_draw_glyph(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_set_encoding(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBSurface* surface = mrb_directfb_get_surface(mrb, self);
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
         mrb_int encoding;

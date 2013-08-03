@@ -40,6 +40,13 @@ mrb_value mrb_directfb_event_buffer_wrap(mrb_state* mrb, struct RClass* c, IDire
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_event_buffer_type, data));
 }
 
+mrb_value mrb_directfb_event_buffer_value(mrb_state* mrb, IDirectFBEventBuffer* event_buffer)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "EventBuffer")));
+    return mrb_directfb_event_buffer_wrap(mrb, c, event_buffer);
+}
+
 IDirectFBEventBuffer* mrb_directfb_event_buffer_get(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_event_buffer_type);
@@ -102,7 +109,7 @@ static mrb_value event_buffer_get_event(mrb_state* mrb, mrb_value self)
         DFBEvent event;
         DFBResult ret = data->event_buffer->GetEvent(data->event_buffer, &event);
         if (!ret) {
-            return mrb_directfb_event_new(mrb, &event);
+            return mrb_directfb_event_value(mrb, &event);
         }
     }
     return mrb_nil_value();
@@ -115,7 +122,7 @@ static mrb_value event_buffer_peek_event(mrb_state* mrb, mrb_value self)
         DFBEvent event;
         DFBResult ret = data->event_buffer->PeekEvent(data->event_buffer, &event);
         if (!ret) {
-            return mrb_directfb_event_new(mrb, &event);
+            return mrb_directfb_event_value(mrb, &event);
         }
     }
     return mrb_nil_value();
@@ -139,7 +146,7 @@ static mrb_value event_buffer_post_event(mrb_state* mrb, mrb_value self)
         mrb_value event_object;
         mrb_get_args(mrb, "o", &event_object);
         DFBEvent event;
-        mrb_directfb_event_get(mrb, event_object, &event);
+        mrb_directfb_event(mrb, event_object, &event);
         DFBResult ret = data->event_buffer->PostEvent(data->event_buffer, &event);
         return mrb_fixnum_value(ret);
     }
@@ -185,9 +192,7 @@ static mrb_value event_buffer_get_statistics(mrb_state* mrb, mrb_value self)
         DFBEventBufferStats stats;
         DFBResult ret = data->event_buffer->GetStatistics(data->event_buffer, &stats);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "EventBufferStats")));
-            return mrb_directfb_event_buffer_stats_wrap(mrb, c, &stats);
+            return mrb_directfb_event_buffer_stats_value(mrb, &stats);
         }
     }
 

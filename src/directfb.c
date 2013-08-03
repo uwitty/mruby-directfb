@@ -133,9 +133,7 @@ static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
         return mrb_nil_value();
     }
 
-    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
-    return mrb_directfb_surface_wrap(mrb, c, surface);
+    return mrb_directfb_surface_value(mrb, surface);
 }
 
 static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
@@ -148,9 +146,7 @@ static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
         IDirectFBDisplayLayer* layer;
         DFBResult ret = data->dfb->GetDisplayLayer(data->dfb, layer_id, &layer);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "DisplayLayer")));
-            return mrb_directfb_display_layer_wrap(mrb, c, layer);
+            return mrb_directfb_display_layer_value(mrb, layer);
         }
     }
     return mrb_nil_value();
@@ -222,9 +218,7 @@ static mrb_value directfb_get_input_device(mrb_state *mrb, mrb_value self)
         IDirectFBInputDevice* device;
         DFBResult ret = dfb->GetInputDevice(dfb, device_id, &device);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputDevice")));
-            return mrb_directfb_input_device_wrap(mrb, c, device);
+            return mrb_directfb_input_device_value(mrb, device);
         }
     }
     return mrb_nil_value();
@@ -240,9 +234,7 @@ static mrb_value directfb_create_image_provider(mrb_state *mrb, mrb_value self)
         IDirectFBImageProvider* provider;
         DFBResult ret = dfb->CreateImageProvider(dfb, filename, &provider);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "ImageProvider")));
-            return mrb_directfb_image_provider_wrap(mrb, c, provider);
+            return mrb_directfb_image_provider_value(mrb, provider);
         }
     }
     return mrb_nil_value();
@@ -261,9 +253,7 @@ static mrb_value directfb_create_font(mrb_state *mrb, mrb_value self)
         DFBFontDescription desc;
         mrb_directfb_font_description_get(mrb, desc_object, &desc);
         if (!dfb->CreateFont(dfb, fontname, &desc, &font)) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Font")));
-            return mrb_directfb_font_wrap(mrb, c, font);
+            return mrb_directfb_font_value(mrb, font);
         }
     }
     return mrb_nil_value();

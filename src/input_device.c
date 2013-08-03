@@ -33,6 +33,13 @@ static void mrb_directfb_input_device_free(mrb_state* mrb, void* p)
 
 static struct mrb_data_type mrb_directfb_input_device_type = {"InputDevice", mrb_directfb_input_device_free};
 
+mrb_value mrb_directfb_input_device_value(mrb_state* mrb, IDirectFBInputDevice* input_device)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputDevice")));
+    return mrb_directfb_input_device_wrap(mrb, c, input_device);
+}
+
 mrb_value mrb_directfb_input_device_wrap(mrb_state* mrb, struct RClass* c, IDirectFBInputDevice* input_device)
 {
     struct mrb_directfb_input_device_data* data = mrb_malloc(mrb, sizeof(struct mrb_directfb_input_device_data));
@@ -104,9 +111,7 @@ static mrb_value input_device_get_keymap_entry(mrb_state *mrb, mrb_value self)
 
         DFBResult ret = device->GetKeymapEntry(device, keycode, &entry);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputDeviceKeymapEntry")));
-            return mrb_directfb_input_device_keymap_entry_wrap(mrb, c, &entry);
+            return mrb_directfb_input_device_keymap_entry_value(mrb, &entry);
         }
     }
     return mrb_nil_value();
@@ -121,9 +126,7 @@ static mrb_value input_device_create_event_buffer(mrb_state *mrb, mrb_value self
         IDirectFBEventBuffer* event_buffer;
         DFBResult ret = device->CreateEventBuffer(device, &event_buffer);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "EventBuffer")));
-            return mrb_directfb_event_buffer_wrap(mrb, c, event_buffer);
+            return mrb_directfb_event_buffer_value(mrb, event_buffer);
         }
     }
     return mrb_nil_value();

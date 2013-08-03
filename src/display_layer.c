@@ -43,7 +43,14 @@ mrb_value mrb_directfb_display_layer_wrap(mrb_state* mrb, struct RClass* c, IDir
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_display_layer_type, data));
 }
 
-IDirectFBDisplayLayer* mrb_directfb_get_display_layer(mrb_state *mrb, mrb_value value)
+mrb_value mrb_directfb_display_layer_value(mrb_state* mrb, IDirectFBDisplayLayer* layer)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "DisplayLayer")));
+    return mrb_directfb_display_layer_wrap(mrb, c, layer);
+}
+
+IDirectFBDisplayLayer* mrb_directfb_display_layer(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_display_layer_data* data = (struct mrb_directfb_display_layer_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_display_layer_type);
     if (data != NULL) {
@@ -68,7 +75,7 @@ static mrb_value display_layer_release(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_get_id(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         DFBDisplayLayerID id;
         DFBResult ret = layer->GetID(layer, &id);
@@ -81,7 +88,7 @@ static mrb_value display_layer_get_id(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_get_description(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         DFBDisplayLayerDescription desc;
         DFBResult ret = layer->GetDescription(layer, &desc);
@@ -94,7 +101,7 @@ static mrb_value display_layer_get_description(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_get_source_descriptions(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer == NULL) {
         return mrb_nil_value();
     }
@@ -134,7 +141,7 @@ static mrb_value display_layer_get_source_descriptions(mrb_state *mrb, mrb_value
 
 static mrb_value display_layer_get_current_output_field(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         int field;
         DFBResult ret = layer->GetCurrentOutputField(layer, &field);
@@ -147,14 +154,12 @@ static mrb_value display_layer_get_current_output_field(mrb_state *mrb, mrb_valu
 
 static mrb_value display_layer_get_surface(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         IDirectFBSurface* surface = NULL;
         DFBResult ret = layer->GetSurface(layer, &surface);
         if (!ret) {
-            struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-            struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
-            return mrb_directfb_surface_wrap(mrb, c, surface);
+            return mrb_directfb_surface_value(mrb, surface);
         }
     }
     return mrb_nil_value();
@@ -165,7 +170,7 @@ static mrb_value display_layer_set_cooperative_level(mrb_state *mrb, mrb_value s
     mrb_int cooperative_level;
     mrb_get_args(mrb, "i", &cooperative_level);
 
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         layer->SetCooperativeLevel(layer, cooperative_level);
     }
@@ -175,7 +180,7 @@ static mrb_value display_layer_set_cooperative_level(mrb_state *mrb, mrb_value s
 
 static mrb_value display_layer_get_configuration(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         DFBDisplayLayerConfig conf;
         DFBResult ret = layer->GetConfiguration(layer, &conf);
@@ -192,7 +197,7 @@ static mrb_value display_layer_set_configuration(mrb_state *mrb, mrb_value self)
     mrb_get_args(mrb, "o", &config_object);
 
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         DFBDisplayLayerConfig conf;
         mrb_directfb_display_layer_configuration_get(mrb, config_object, &conf);
@@ -208,7 +213,7 @@ static mrb_value display_layer_test_configuration(mrb_state *mrb, mrb_value self
     mrb_get_args(mrb, "o", &config_object);
 
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         DFBDisplayLayerConfig conf;
         mrb_directfb_display_layer_configuration_get(mrb, config_object, &conf);
@@ -227,7 +232,7 @@ static mrb_value display_layer_test_configuration(mrb_state *mrb, mrb_value self
 static mrb_value display_layer_enable_cursor(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         mrb_int enable;
         mrb_get_args(mrb, "i", &enable);
@@ -238,7 +243,7 @@ static mrb_value display_layer_enable_cursor(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_get_cursor_position(mrb_state *mrb, mrb_value self)
 {
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         int x, y;
         DFBResult ret = layer->GetCursorPosition(layer, &x, &y);
@@ -255,7 +260,7 @@ static mrb_value display_layer_get_cursor_position(mrb_state *mrb, mrb_value sel
 static mrb_value display_layer_warp_cursor(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         mrb_int x, y;
         mrb_get_args(mrb, "ii", &x, &y);
@@ -267,7 +272,7 @@ static mrb_value display_layer_warp_cursor(mrb_state *mrb, mrb_value self)
 static mrb_value display_layer_set_cursor_acceleration(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         mrb_int numerator, denominator, threshold;
         mrb_get_args(mrb, "iii", &numerator, &denominator, &threshold);
@@ -279,12 +284,12 @@ static mrb_value display_layer_set_cursor_acceleration(mrb_state *mrb, mrb_value
 static mrb_value display_layer_set_cursor_shape(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         mrb_value shape_object;
         mrb_int hot_x, hot_y;
         mrb_get_args(mrb, "oii", &shape_object, &hot_x, &hot_y);
-        IDirectFBSurface* shape = mrb_directfb_get_surface(mrb, shape_object);
+        IDirectFBSurface* shape = mrb_directfb_surface(mrb, shape_object);
         ret = layer->SetCursorShape(layer, shape, hot_x, hot_y);
     }
     return mrb_fixnum_value(ret);
@@ -293,7 +298,7 @@ static mrb_value display_layer_set_cursor_shape(mrb_state *mrb, mrb_value self)
 static mrb_value display_layer_set_cursor_opacity(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         mrb_int opacity;
         mrb_get_args(mrb, "i", &opacity);
@@ -305,7 +310,7 @@ static mrb_value display_layer_set_cursor_opacity(mrb_state *mrb, mrb_value self
 static mrb_value display_layer_wait_for_sync(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         ret = layer->WaitForSync(layer);
     }
@@ -315,7 +320,7 @@ static mrb_value display_layer_wait_for_sync(mrb_state *mrb, mrb_value self)
 static mrb_value display_layer_switch_context(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         mrb_int b;
         mrb_get_args(mrb, "b", &b);
@@ -328,7 +333,7 @@ static mrb_value display_layer_switch_context(mrb_state *mrb, mrb_value self)
 static mrb_value display_layer_set_rotation(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_get_display_layer(mrb, self);
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         mrb_int rotation;
         mrb_get_args(mrb, "i", &rotation);

@@ -43,7 +43,14 @@ mrb_value mrb_directfb_region_wrap(mrb_state* mrb, struct RClass* c, int x1, int
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_region_type, data));
 }
 
-DFBRegion* mrb_directfb_get_region(mrb_state *mrb, mrb_value value)
+mrb_value mrb_directfb_region_value(mrb_state* mrb, int x1, int y1, int x2, int y2)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Region")));
+    return mrb_directfb_region_wrap(mrb, c, x1, y1, x2, y2);
+}
+
+DFBRegion* mrb_directfb_region(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_region_data* data = (struct mrb_directfb_region_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_region_type);
     return (data != NULL)? &data->region : NULL;
@@ -58,25 +65,25 @@ static mrb_value region_new(mrb_state *mrb, mrb_value self)
 
 static mrb_value region_x1(mrb_state *mrb, mrb_value self)
 {
-    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    DFBRegion* region = mrb_directfb_region(mrb, self);
     return (region != NULL)? mrb_fixnum_value(region->x1) : mrb_nil_value();
 }
 
 static mrb_value region_y1(mrb_state *mrb, mrb_value self)
 {
-    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    DFBRegion* region = mrb_directfb_region(mrb, self);
     return (region != NULL)? mrb_fixnum_value(region->y1) : mrb_nil_value();
 }
 
 static mrb_value region_x2(mrb_state *mrb, mrb_value self)
 {
-    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    DFBRegion* region = mrb_directfb_region(mrb, self);
     return (region != NULL)? mrb_fixnum_value(region->x2) : mrb_nil_value();
 }
 
 static mrb_value region_y2(mrb_state *mrb, mrb_value self)
 {
-    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    DFBRegion* region = mrb_directfb_region(mrb, self);
     return (region != NULL)? mrb_fixnum_value(region->y2) : mrb_nil_value();
 }
 
@@ -125,7 +132,14 @@ mrb_value mrb_directfb_rectangle_wrap(mrb_state* mrb, struct RClass* c, int x, i
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_rectangle_type, data));
 }
 
-DFBRectangle* mrb_directfb_get_rectangle(mrb_state *mrb, mrb_value value)
+mrb_value mrb_directfb_rectangle_value(mrb_state* mrb, int x, int y, int w, int h)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Rectangle")));
+    return mrb_directfb_rectangle_wrap(mrb, c, x, y, w, h);
+}
+
+DFBRectangle* mrb_directfb_rectangle(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_rectangle_data* data = (struct mrb_directfb_rectangle_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_rectangle_type);
     return (data != NULL)? &data->rectangle : NULL;
@@ -140,25 +154,25 @@ static mrb_value rectangle_new(mrb_state *mrb, mrb_value self)
 
 static mrb_value rectangle_x(mrb_state *mrb, mrb_value self)
 {
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     return (rect != NULL)? mrb_fixnum_value(rect->x) : mrb_nil_value();
 }
 
 static mrb_value rectangle_y(mrb_state *mrb, mrb_value self)
 {
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     return (rect != NULL)? mrb_fixnum_value(rect->y) : mrb_nil_value();
 }
 
 static mrb_value rectangle_w(mrb_state *mrb, mrb_value self)
 {
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     return (rect != NULL)? mrb_fixnum_value(rect->w) : mrb_nil_value();
 }
 
 static mrb_value rectangle_h(mrb_state *mrb, mrb_value self)
 {
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     return (rect != NULL)? mrb_fixnum_value(rect->h) : mrb_nil_value();
 }
 
@@ -166,7 +180,7 @@ static mrb_value rectangle_x_set(mrb_state *mrb, mrb_value self)
 {
     mrb_int x;
     mrb_get_args(mrb, "i", &x);
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->x = x;
     }
@@ -177,7 +191,7 @@ static mrb_value rectangle_y_set(mrb_state *mrb, mrb_value self)
 {
     mrb_int y;
     mrb_get_args(mrb, "i", &y);
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->y = y;
     }
@@ -188,7 +202,7 @@ static mrb_value rectangle_w_set(mrb_state *mrb, mrb_value self)
 {
     mrb_int w;
     mrb_get_args(mrb, "i", &w);
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->w = w;
     }
@@ -199,7 +213,7 @@ static mrb_value rectangle_h_set(mrb_state *mrb, mrb_value self)
 {
     mrb_int h;
     mrb_get_args(mrb, "i", &h);
-    DFBRectangle* rect = mrb_directfb_get_rectangle(mrb, self);
+    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->h = h;
     }
@@ -247,7 +261,14 @@ mrb_value mrb_directfb_input_device_keymap_entry_wrap(mrb_state* mrb, struct RCl
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_input_device_keymap_entry_type, data));
 }
 
-DFBInputDeviceKeymapEntry* mrb_directfb_get_input_device_keymap_entry(mrb_state *mrb, mrb_value value)
+mrb_value mrb_directfb_input_device_keymap_entry_value(mrb_state* mrb, DFBInputDeviceKeymapEntry* entry)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputDeviceKeymapEntry")));
+    return mrb_directfb_input_device_keymap_entry_wrap(mrb, c, entry);
+}
+
+DFBInputDeviceKeymapEntry* mrb_directfb_input_device_keymap_entry(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_input_device_keymap_entry_data* data = (struct mrb_directfb_input_device_keymap_entry_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_input_device_keymap_entry_type);
     return (data != NULL)? &data->input_device_keymap_entry : NULL;
@@ -255,25 +276,25 @@ DFBInputDeviceKeymapEntry* mrb_directfb_get_input_device_keymap_entry(mrb_state 
 
 static mrb_value input_device_keymap_entry_code(mrb_state *mrb, mrb_value self)
 {
-    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_input_device_keymap_entry(mrb, self);
     return (entry != NULL)? mrb_fixnum_value(entry->code) : mrb_nil_value();
 }
 
 static mrb_value input_device_keymap_entry_locks(mrb_state *mrb, mrb_value self)
 {
-    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_input_device_keymap_entry(mrb, self);
     return (entry != NULL)? mrb_fixnum_value(entry->locks) : mrb_nil_value();
 }
 
 static mrb_value input_device_keymap_entry_identifier(mrb_state *mrb, mrb_value self)
 {
-    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_input_device_keymap_entry(mrb, self);
     return (entry != NULL)? mrb_fixnum_value(entry->identifier) : mrb_nil_value();
 }
 
 static mrb_value input_device_keymap_entry_symbols(mrb_state *mrb, mrb_value self)
 {
-    DFBInputDeviceKeymapEntry* entry = mrb_directfb_get_input_device_keymap_entry(mrb, self);
+    DFBInputDeviceKeymapEntry* entry = mrb_directfb_input_device_keymap_entry(mrb, self);
     if (entry != NULL) {
         mrb_value* a = mrb_malloc(mrb, (DIKSI_LAST+1)*sizeof(mrb_value));
         int i;
@@ -321,7 +342,14 @@ mrb_value mrb_directfb_input_event_wrap(mrb_state* mrb, struct RClass* c, DFBInp
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_input_event_type, data));
 }
 
-DFBInputEvent* mrb_directfb_get_input_event(mrb_state *mrb, mrb_value value)
+mrb_value mrb_directfb_input_event_value(mrb_state* mrb, DFBInputEvent* input_event)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputEvent")));
+    return mrb_directfb_input_event_wrap(mrb, c, input_event);
+}
+
+DFBInputEvent* mrb_directfb_input_event(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_input_event_data* data = (struct mrb_directfb_input_event_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_input_event_type);
     return (data != NULL)? &data->input_event : NULL;
@@ -329,32 +357,32 @@ DFBInputEvent* mrb_directfb_get_input_event(mrb_state *mrb, mrb_value value)
 
 static mrb_value input_event_clazz(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->clazz) : mrb_nil_value();
 }
 
 static mrb_value input_event_type(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->type) : mrb_nil_value();
 }
 
 static mrb_value input_event_device_id(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->device_id) : mrb_nil_value();
 }
 
 static mrb_value input_event_flags(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->flags) : mrb_nil_value();
 }
 
 static mrb_value input_event_timestamp(mrb_state *mrb, mrb_value self)
 {
     mrb_value hash = mrb_hash_new(mrb);
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_sec")), mrb_fixnum_value(input_event->timestamp.tv_sec));
     mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_usec")), mrb_fixnum_value(input_event->timestamp.tv_usec));
     return hash;
@@ -362,73 +390,73 @@ static mrb_value input_event_timestamp(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_event_key_code(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->key_code) : mrb_nil_value();
 }
 
 static mrb_value input_event_key_id(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->key_id) : mrb_nil_value();
 }
 
 static mrb_value input_event_key_symbol(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->key_symbol) : mrb_nil_value();
 }
 
 static mrb_value input_event_modifiers(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->modifiers) : mrb_nil_value();
 }
 
 static mrb_value input_event_locks(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->locks) : mrb_nil_value();
 }
 
 static mrb_value input_event_button(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->button) : mrb_nil_value();
 }
 
 static mrb_value input_event_buttons(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->buttons) : mrb_nil_value();
 }
 
 static mrb_value input_event_axis(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->axis) : mrb_nil_value();
 }
 
 static mrb_value input_event_axisabs(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->axisabs) : mrb_nil_value();
 }
 
 static mrb_value input_event_axisrel(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->axisrel) : mrb_nil_value();
 }
 
 static mrb_value input_event_min(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->min) : mrb_nil_value();
 }
 
 static mrb_value input_event_max(mrb_state *mrb, mrb_value self)
 {
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     return (input_event != NULL)? mrb_fixnum_value(input_event->max) : mrb_nil_value();
 }
 
@@ -479,6 +507,13 @@ mrb_value mrb_directfb_window_event_wrap(mrb_state* mrb, struct RClass* c, DFBWi
     }
     memcpy(&data->window_event, window_event, sizeof(data->window_event));
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_window_event_type, data));
+}
+
+mrb_value mrb_directfb_window_event_value(mrb_state* mrb, DFBWindowEvent* window_event)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "WindowEvent")));
+    return mrb_directfb_window_event_wrap(mrb, c, window_event);
 }
 
 DFBWindowEvent* mrb_directfb_get_window_event(mrb_state *mrb, mrb_value value)
@@ -598,7 +633,7 @@ static mrb_value window_event_buttons(mrb_state *mrb, mrb_value self)
 static mrb_value window_event_timestamp(mrb_state *mrb, mrb_value self)
 {
     mrb_value hash = mrb_hash_new(mrb);
-    DFBInputEvent* input_event = mrb_directfb_get_input_event(mrb, self);
+    DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
     mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_sec")), mrb_fixnum_value(input_event->timestamp.tv_sec));
     mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_usec")), mrb_fixnum_value(input_event->timestamp.tv_usec));
     return hash;
@@ -655,6 +690,13 @@ mrb_value mrb_directfb_video_provider_event_wrap(mrb_state* mrb, struct RClass* 
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_video_provider_event_type, data));
 }
 
+mrb_value mrb_directfb_video_provider_event_value(mrb_state* mrb, DFBVideoProviderEvent* video_provider_event)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "VideoProviderEvent")));
+    return mrb_directfb_video_provider_event_wrap(mrb, c, video_provider_event);
+}
+
 DFBVideoProviderEvent* mrb_directfb_get_video_provider_event(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_video_provider_event_data* data = (struct mrb_directfb_video_provider_event_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_video_provider_event_type);
@@ -704,26 +746,21 @@ static void define_video_provider_event(mrb_state* mrb, struct RClass* outer)
 
 // ============================================================================
 
-mrb_value mrb_directfb_event_new(mrb_state* mrb, DFBEvent* event)
+mrb_value mrb_directfb_event_value(mrb_state* mrb, DFBEvent* event)
 {
     if (event == NULL) {
         return mrb_nil_value();
     }
 
-    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* class = NULL;
     switch(event->clazz) {
         case DFEC_INPUT:
-            class = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputEvent")));
-            return mrb_directfb_input_event_wrap(mrb, class, &event->input);
+            return mrb_directfb_input_event_value(mrb, &event->input);
 
         case DFEC_WINDOW:
-            class = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "WindowEvent")));
-            return mrb_directfb_window_event_wrap(mrb, class, &event->window);
+            return mrb_directfb_window_event_value(mrb, &event->window);
 
         case DFEC_VIDEOPROVIDER:
-            class = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "WindowEvent")));
-            return mrb_directfb_video_provider_event_wrap(mrb, class, &event->videoprovider);
+            return mrb_directfb_video_provider_event_value(mrb, &event->videoprovider);
 
         case DFEC_USER:
         case DFEC_UNIVERSAL:
@@ -733,13 +770,13 @@ mrb_value mrb_directfb_event_new(mrb_state* mrb, DFBEvent* event)
     };
 }
 
-void mrb_directfb_event_get(mrb_state* mrb, mrb_value event_object, DFBEvent* event)
+void mrb_directfb_event(mrb_state* mrb, mrb_value event_object, DFBEvent* event)
 {
     memset(event, 0, sizeof(*event));
 
     DFBEvent* e = NULL;
 
-    if (   ((e = (DFBEvent*)mrb_directfb_get_input_event(mrb, event_object)) != NULL)
+    if (   ((e = (DFBEvent*)mrb_directfb_input_event(mrb, event_object)) != NULL)
         || ((e = (DFBEvent*)mrb_directfb_get_window_event(mrb, event_object)) != NULL)
         || ((e = (DFBEvent*)mrb_directfb_get_video_provider_event(mrb, event_object)) != NULL)
         ) {
@@ -772,6 +809,13 @@ mrb_value mrb_directfb_event_buffer_stats_wrap(mrb_state* mrb, struct RClass* c,
     }
     memcpy(&data->stats, stats, sizeof(data->stats));
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_event_buffer_stats_type, data));
+}
+
+mrb_value mrb_directfb_event_buffer_stats_value(mrb_state* mrb, DFBEventBufferStats* stats)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "EventBufferStats")));
+    return mrb_directfb_event_buffer_stats_wrap(mrb, c, stats);
 }
 
 DFBEventBufferStats* mrb_directfb_get_event_buffer_stats(mrb_state *mrb, mrb_value value)

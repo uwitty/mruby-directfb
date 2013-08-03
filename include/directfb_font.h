@@ -9,7 +9,8 @@
 
 #include <directfb.h>
 
+mrb_value mrb_directfb_font_value(mrb_state* mrb, IDirectFBFont* font);
 mrb_value mrb_directfb_font_wrap(mrb_state* mrb, struct RClass* c, IDirectFBFont* font);
-IDirectFBFont* mrb_directfb_font_get(mrb_state* mrb, mrb_value value);
+IDirectFBFont* mrb_directfb_font(mrb_state* mrb, mrb_value value);
 void mrb_directfb_define_font(mrb_state* mrb, struct RClass* outer);
 
