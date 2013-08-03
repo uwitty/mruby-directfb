@@ -150,3 +150,56 @@ void mrb_directfb_image_description_get(mrb_state *mrb, mrb_value hash, DFBImage
 #endif
 }
 
+mrb_value mrb_directfb_display_layer_description_new(mrb_state *mrb, const DFBDisplayLayerDescription* desc)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "type")), mrb_fixnum_value(desc->type));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")), mrb_fixnum_value(desc->caps));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "name")), mrb_str_new_cstr(mrb, desc->name));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "level")), mrb_fixnum_value(desc->level));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "regions")), mrb_fixnum_value(desc->regions));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "sources")), mrb_fixnum_value(desc->sources));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "clip_regions")), mrb_fixnum_value(desc->clip_regions));
+
+    return value;
+}
+
+mrb_value mrb_directfb_display_layer_source_description_new(mrb_state *mrb, const DFBDisplayLayerSourceDescription* desc)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "source_id")), mrb_fixnum_value(desc->source_id));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "name")), mrb_str_new_cstr(mrb, desc->name));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")), mrb_fixnum_value(desc->caps));
+
+    return value;
+}
+
+mrb_value mrb_directfb_display_layer_configuration_new(mrb_state *mrb, const DFBDisplayLayerConfig* conf)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, conf, width       , DLCONF_WIDTH);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, conf, height      , DLCONF_HEIGHT);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, conf, pixelformat , DLCONF_PIXELFORMAT);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, conf, buffermode  , DLCONF_BUFFERMODE);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, conf, options     , DLCONF_OPTIONS);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, conf, source      , DLCONF_SOURCE);
+    DESC_INT_VALUE_TO_MRBHASH(mrb, value, conf, surface_caps, DLCONF_SURFACE_CAPS);
+
+    return value;
+}
+
+void mrb_directfb_display_layer_configuration_get(mrb_state *mrb, mrb_value value, DFBDisplayLayerConfig* conf)
+{
+    memset(conf, 0, sizeof(*conf));
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, width       , DLCONF_WIDTH);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, height      , DLCONF_HEIGHT);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, pixelformat , DLCONF_PIXELFORMAT);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, buffermode  , DLCONF_BUFFERMODE);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, options     , DLCONF_OPTIONS);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, source      , DLCONF_SOURCE);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, surface_caps, DLCONF_SURFACE_CAPS);
+}
+

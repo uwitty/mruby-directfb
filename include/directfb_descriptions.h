@@ -20,3 +20,10 @@ void mrb_directfb_font_description_get(mrb_state *mrb, mrb_value hash, DFBFontDe
 mrb_value mrb_directfb_image_description_new(mrb_state *mrb, const DFBImageDescription* desc);
 void mrb_directfb_image_description_get(mrb_state *mrb, mrb_value hash, DFBImageDescription* desc);
 
+mrb_value mrb_directfb_display_layer_description_new(mrb_state *mrb, const DFBDisplayLayerDescription* desc);
+
+mrb_value mrb_directfb_display_layer_source_description_new(mrb_state *mrb, const DFBDisplayLayerSourceDescription* desc);
+
+mrb_value mrb_directfb_display_layer_configuration_new(mrb_state *mrb, const DFBDisplayLayerConfig* conf);
+void mrb_directfb_display_layer_configuration_get(mrb_state *mrb, mrb_value value, DFBDisplayLayerConfig* conf);
+
