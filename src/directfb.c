@@ -108,6 +108,7 @@ static mrb_value directfb_release(mrb_state *mrb, mrb_value self)
     struct mrb_directfb_data* data = (struct mrb_directfb_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_type);
     if ((data != NULL) && (data->dfb != NULL)) {
         data->dfb->Release(data->dfb);
+        data->dfb = NULL;
     }
     return mrb_nil_value();
 }
