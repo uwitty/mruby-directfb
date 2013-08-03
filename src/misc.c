@@ -56,6 +56,45 @@ static mrb_value region_new(mrb_state *mrb, mrb_value self)
     return mrb_directfb_region_wrap(mrb, mrb_class_ptr(self), x1, y1, x2, y2);
 }
 
+static mrb_value region_x1(mrb_state *mrb, mrb_value self)
+{
+    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    return (region != NULL)? mrb_fixnum_value(region->x1) : mrb_nil_value();
+}
+
+static mrb_value region_y1(mrb_state *mrb, mrb_value self)
+{
+    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    return (region != NULL)? mrb_fixnum_value(region->y1) : mrb_nil_value();
+}
+
+static mrb_value region_x2(mrb_state *mrb, mrb_value self)
+{
+    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    return (region != NULL)? mrb_fixnum_value(region->x2) : mrb_nil_value();
+}
+
+static mrb_value region_y2(mrb_state *mrb, mrb_value self)
+{
+    DFBRegion* region = mrb_directfb_get_region(mrb, self);
+    return (region != NULL)? mrb_fixnum_value(region->y2) : mrb_nil_value();
+}
+
+static void define_region(mrb_state* mrb, struct RClass* outer)
+{
+    struct RClass* region = mrb_define_class_under(mrb, outer, "Region", mrb->object_class);
+
+    mrb_define_class_method(mrb, region, "new", region_new, MRB_ARGS_REQ(4));
+    mrb_define_method(mrb, region, "x1", region_x1, MRB_ARGS_NONE());
+    mrb_define_method(mrb, region, "y1", region_y1, MRB_ARGS_NONE());
+    mrb_define_method(mrb, region, "x2", region_x2, MRB_ARGS_NONE());
+    mrb_define_method(mrb, region, "y2", region_y2, MRB_ARGS_NONE());
+    //mrb_define_method(mrb, region, "x1=", region_x1_set, MRB_ARGS_REQ(1));
+    //mrb_define_method(mrb, region, "y1=", region_y1_set, MRB_ARGS_REQ(1));
+    //mrb_define_method(mrb, region, "x2=", region_x2_set, MRB_ARGS_REQ(1));
+    //mrb_define_method(mrb, region, "y2=", region_y2_set, MRB_ARGS_REQ(1));
+}
+
 // ============================================================================
 // IDirectFB::Rectangle object - DFBRectangle
 
@@ -1037,9 +1076,7 @@ static void define_event_buffer_stats(mrb_state* mrb, struct RClass* outer)
 
 void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
 {
-    struct RClass* region = mrb_define_class_under(mrb, outer, "Region", mrb->object_class);
-    mrb_define_class_method(mrb, region, "new", region_new, MRB_ARGS_REQ(4));
-
+    define_region(mrb, outer);
     define_rectangle(mrb, outer);
     define_input_device_keymap_entry(mrb, outer);
     define_input_event(mrb, outer);
