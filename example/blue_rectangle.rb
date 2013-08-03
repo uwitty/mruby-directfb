@@ -19,16 +19,7 @@ surface.fill_rectangle(0, 0, 256, 256)
 surface.flip(DirectFB::Region.new(64, 64, 128, 128), 0)
 
 dfb.enum_input_devices() {|id, desc|
-    print "ruby callback block: {id:#{id}, desc:\n"
-    print "  type:#{desc.type}\n"
-    print "  caps:#{desc.caps}\n"
-    print "  min_keycode:#{desc.min_keycode}\n"
-    print "  max_keycode:#{desc.max_keycode}\n"
-    print "  max_axis:#{desc.max_axis}\n"
-    print "  max_button:#{desc.max_button}\n"
-    print "  name:#{desc.name}\n"
-    print "  vendor:#{desc.vendor}\n"
-    print "}\n"
+    print "ruby callback block: {id:#{id}, desc:#{desc.to_s}}\n"
 }
 
 DirectFB::usleep(2*1000*1000);
