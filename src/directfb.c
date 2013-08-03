@@ -115,7 +115,6 @@ static mrb_value directfb_release(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
 {
-#if 1
     mrb_value desc_object;
     mrb_get_args(mrb, "o", &desc_object);
 
@@ -137,27 +136,6 @@ static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
     struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
     return mrb_directfb_surface_wrap(mrb, c, surface);
-#else
-    mrb_value desc_object;
-    mrb_get_args(mrb, "o", &desc_object);
-
-    IDirectFB* dfb = get_directfb(mrb, self);
-    DFBSurfaceDescription* desc = mrb_directfb_surface_description_get(mrb, desc_object);
-    if ((dfb == NULL) || (desc == NULL)) {
-        return mrb_nil_value();
-    }
-
-    IDirectFBSurface* surface = NULL;
-    DFBResult ret = dfb->CreateSurface(dfb, desc, &surface);
-    if (ret) {
-        //DirectFBError("CreateSurface", ret);
-        return mrb_nil_value();
-    }
-
-    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
-    return mrb_directfb_surface_wrap(mrb, c, surface);
-#endif
 }
 
 static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
@@ -214,7 +192,6 @@ struct enum_input_devices_callback_arg {
 static DFBEnumerationResult enum_input_devices_callback(DFBInputDeviceID device_id, DFBInputDeviceDescription desc, void* callbackdata)
 {
     struct enum_input_devices_callback_arg* arg = (struct enum_input_devices_callback_arg*)callbackdata;
-    printf("%s(device_id:%d)\n", __func__, device_id);
     mrb_value args[2];
     args[0] = mrb_fixnum_value(device_id);
     args[1] = mrb_directfb_input_device_description_new(arg->mrb, &desc);
@@ -233,7 +210,6 @@ static mrb_value directfb_enum_input_devices(mrb_state *mrb, mrb_value self)
         struct enum_input_devices_callback_arg arg = {mrb, &block};
         ret = dfb->EnumInputDevices(dfb, enum_input_devices_callback, (void*)&arg);
     }
-    printf("end:%s()\n", __func__);
     return mrb_fixnum_value(ret);
 }
 
@@ -335,8 +311,7 @@ static mrb_value directfb_wait_for_sync(mrb_state *mrb, mrb_value self)
 
 
 
-    void
-mrb_mruby_directfb_gem_init(mrb_state* mrb)
+void mrb_mruby_directfb_gem_init(mrb_state* mrb)
 {
     int ai = mrb_gc_arena_save(mrb);
 
@@ -375,8 +350,8 @@ mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_gc_arena_restore(mrb, ai);
 }
 
-void
-mrb_mruby_directfb_gem_final(mrb_state* mrb) {
+void mrb_mruby_directfb_gem_final(mrb_state* mrb)
+{
     // finalizer
 }
 
