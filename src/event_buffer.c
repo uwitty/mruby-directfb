@@ -157,10 +157,12 @@ static mrb_value event_buffer_wake_up(mrb_state* mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+#if 0
 static mrb_value event_buffer_create_file_descriptor(mrb_state* mrb, mrb_value self)
 {
     return mrb_nil_value();
 }
+#endif
 
 static mrb_value event_buffer_enable_statistics(mrb_state* mrb, mrb_value self)
 {
