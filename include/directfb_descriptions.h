@@ -27,3 +27,7 @@ mrb_value mrb_directfb_display_layer_source_description_new(mrb_state *mrb, cons
 mrb_value mrb_directfb_display_layer_configuration_new(mrb_state *mrb, const DFBDisplayLayerConfig* conf);
 void mrb_directfb_display_layer_configuration_get(mrb_state *mrb, mrb_value value, DFBDisplayLayerConfig* conf);
 
+mrb_value mrb_directfb_graphics_device_description_new(mrb_state *mrb, const DFBGraphicsDeviceDescription* desc);
+
+mrb_value mrb_directfb_screen_description_new(mrb_state *mrb, const DFBScreenDescription* desc);
+

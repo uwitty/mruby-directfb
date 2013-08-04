@@ -203,3 +203,37 @@ void mrb_directfb_display_layer_configuration_get(mrb_state *mrb, mrb_value valu
     DESC_INT_VALUE_TO_CSTRUCT(mrb, value, conf, surface_caps, DLCONF_SURFACE_CAPS);
 }
 
+mrb_value mrb_directfb_graphics_device_description_new(mrb_state *mrb, const DFBGraphicsDeviceDescription* desc)
+{
+    mrb_value driver = mrb_hash_new(mrb);
+    mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "major")), mrb_fixnum_value(desc->driver.major));
+    mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "minor")), mrb_fixnum_value(desc->driver.minor));
+    mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "name")), mrb_str_new_cstr(mrb, desc->driver.name));
+    mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "vendor")), mrb_str_new_cstr(mrb, desc->driver.vendor));
+
+    mrb_value value = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "acceleration_mask")), mrb_fixnum_value(desc->acceleration_mask));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "blitting_flags")), mrb_fixnum_value(desc->blitting_flags));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "drawing_flags")), mrb_fixnum_value(desc->drawing_flags));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "video_memory")), mrb_fixnum_value(desc->video_memory));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "name")), mrb_str_new_cstr(mrb, desc->name));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "vendor")), mrb_str_new_cstr(mrb, desc->vendor));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "driver")), driver);
+
+    return value;
+}
+
+mrb_value mrb_directfb_screen_description_new(mrb_state *mrb, const DFBScreenDescription* desc)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")), mrb_fixnum_value(desc->caps));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "name")), mrb_str_new_cstr(mrb, desc->name));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "mixers")), mrb_fixnum_value(desc->mixers));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "encoders")), mrb_fixnum_value(desc->encoders));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "outputs")), mrb_fixnum_value(desc->outputs));
+
+    return value;
+}
+
