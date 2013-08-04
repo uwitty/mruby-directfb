@@ -113,45 +113,6 @@ static mrb_value directfb_release(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
-static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
-{
-    mrb_value desc_object;
-    mrb_get_args(mrb, "o", &desc_object);
-
-    DFBSurfaceDescription desc;
-    mrb_directfb_surface_description_get(mrb, desc_object, &desc);
-
-    IDirectFB* dfb = get_directfb(mrb, self);
-    if (dfb == NULL) {
-        return mrb_nil_value();
-    }
-
-    IDirectFBSurface* surface = NULL;
-    DFBResult ret = dfb->CreateSurface(dfb, &desc, &surface);
-    if (ret) {
-        //DirectFBError("CreateSurface", ret);
-        return mrb_nil_value();
-    }
-
-    return mrb_directfb_surface_value(mrb, surface);
-}
-
-static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
-{
-    mrb_int layer_id;
-    mrb_get_args(mrb, "i", &layer_id);
-
-    struct mrb_directfb_data* data = (struct mrb_directfb_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_type);
-    if (data->dfb != NULL) {
-        IDirectFBDisplayLayer* layer;
-        DFBResult ret = data->dfb->GetDisplayLayer(data->dfb, layer_id, &layer);
-        if (!ret) {
-            return mrb_directfb_display_layer_value(mrb, layer);
-        }
-    }
-    return mrb_nil_value();
-}
-
 static mrb_value directfb_set_cooperative_level(mrb_state *mrb, mrb_value self)
 {
     mrb_int level;
@@ -178,6 +139,152 @@ static mrb_value directfb_set_video_mode(mrb_state *mrb, mrb_value self)
         ret = dfb->SetVideoMode(dfb, width, height, bpp);
     }
     return mrb_fixnum_value(ret);
+}
+
+static mrb_value directfb_get_device_description(mrb_state *mrb, mrb_value self)
+{
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        DFBGraphicsDeviceDescription desc;
+        DFBResult ret = dfb->GetDeviceDescription(dfb, &desc);
+        if (!ret) {
+            return mrb_directfb_graphics_device_description_new(mrb, &desc);
+        }
+    }
+    return mrb_nil_value();
+}
+
+struct enum_video_modes_callback_arg {
+    mrb_state* mrb;
+    mrb_value* block;
+};
+
+static DFBEnumerationResult enum_video_modes_callback(int width, int height, int bpp, void* callbackdata)
+{
+    struct enum_video_modes_callback_arg* arg = (struct enum_video_modes_callback_arg*)callbackdata;
+    int ai = mrb_gc_arena_save(arg->mrb);
+    mrb_value args[3];
+    args[0] = mrb_fixnum_value(width);
+    args[1] = mrb_fixnum_value(height);
+    args[2] = mrb_fixnum_value(bpp);
+    mrb_yield_argv(arg->mrb, *(arg->block), 3, args);
+    mrb_gc_arena_restore(arg->mrb, ai);
+    return 0;
+}
+
+static mrb_value directfb_enum_video_modes(mrb_state *mrb, mrb_value self)
+{
+    DFBResult ret = -1;
+    mrb_value block;
+    mrb_get_args(mrb, "&", &block);
+
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        struct enum_video_modes_callback_arg arg = {mrb, &block};
+        ret = dfb->EnumVideoModes(dfb, enum_video_modes_callback, (void*)&arg);
+    }
+    return mrb_fixnum_value(ret);
+}
+
+static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
+{
+    mrb_value desc_object;
+    mrb_get_args(mrb, "o", &desc_object);
+
+    DFBSurfaceDescription desc;
+    mrb_directfb_surface_description_get(mrb, desc_object, &desc);
+
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb == NULL) {
+        return mrb_nil_value();
+    }
+
+    IDirectFBSurface* surface = NULL;
+    DFBResult ret = dfb->CreateSurface(dfb, &desc, &surface);
+    if (ret) {
+        //DirectFBError("CreateSurface", ret);
+        return mrb_nil_value();
+    }
+
+    return mrb_directfb_surface_value(mrb, surface);
+}
+
+struct enum_screens_callback_arg {
+    mrb_state* mrb;
+    mrb_value* block;
+};
+
+static DFBEnumerationResult enum_screens_callback(DFBScreenID id, DFBScreenDescription desc, void* callbackdata)
+{
+    struct enum_screens_callback_arg* arg = (struct enum_screens_callback_arg*)callbackdata;
+    int ai = mrb_gc_arena_save(arg->mrb);
+    mrb_value args[2];
+    args[0] = mrb_fixnum_value(id);
+    args[1] = mrb_directfb_screen_description_new(arg->mrb, &desc);
+    mrb_yield_argv(arg->mrb, *(arg->block), 2, args);
+    mrb_gc_arena_restore(arg->mrb, ai);
+    return 0;
+}
+
+static mrb_value directfb_enum_screens(mrb_state *mrb, mrb_value self)
+{
+    DFBResult ret = -1;
+    mrb_value block;
+    mrb_get_args(mrb, "&", &block);
+
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        struct enum_screens_callback_arg arg = {mrb, &block};
+        ret = dfb->EnumScreens(dfb, enum_screens_callback, (void*)&arg);
+    }
+    return mrb_fixnum_value(ret);
+}
+
+struct enum_display_layers_callback_arg {
+    mrb_state* mrb;
+    mrb_value* block;
+};
+
+static DFBEnumerationResult enum_display_layers_callback(DFBDisplayLayerID id, DFBDisplayLayerDescription desc, void* callbackdata)
+{
+    struct enum_display_layers_callback_arg* arg = (struct enum_display_layers_callback_arg*)callbackdata;
+    int ai = mrb_gc_arena_save(arg->mrb);
+    mrb_value args[2];
+    args[0] = mrb_fixnum_value(id);
+    args[1] = mrb_directfb_display_layer_description_new(arg->mrb, &desc);
+    mrb_yield_argv(arg->mrb, *(arg->block), 2, args);
+    mrb_gc_arena_restore(arg->mrb, ai);
+    return 0;
+}
+
+static mrb_value directfb_enum_display_layers(mrb_state *mrb, mrb_value self)
+{
+    DFBResult ret = -1;
+    mrb_value block;
+    mrb_get_args(mrb, "&", &block);
+
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        struct enum_display_layers_callback_arg arg = {mrb, &block};
+        ret = dfb->EnumDisplayLayers(dfb, enum_display_layers_callback, (void*)&arg);
+    }
+    return mrb_fixnum_value(ret);
+}
+
+static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
+{
+    mrb_int layer_id;
+    mrb_get_args(mrb, "i", &layer_id);
+
+    struct mrb_directfb_data* data = (struct mrb_directfb_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_type);
+    if (data->dfb != NULL) {
+        IDirectFBDisplayLayer* layer;
+        DFBResult ret = data->dfb->GetDisplayLayer(data->dfb, layer_id, &layer);
+        if (!ret) {
+            return mrb_directfb_display_layer_value(mrb, layer);
+        }
+    }
+    return mrb_nil_value();
 }
 
 struct enum_input_devices_callback_arg {
@@ -219,6 +326,36 @@ static mrb_value directfb_get_input_device(mrb_state *mrb, mrb_value self)
         DFBResult ret = dfb->GetInputDevice(dfb, device_id, &device);
         if (!ret) {
             return mrb_directfb_input_device_value(mrb, device);
+        }
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value directfb_create_event_buffer(mrb_state *mrb, mrb_value self)
+{
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        IDirectFBEventBuffer* buffer;
+        DFBResult ret = dfb->CreateEventBuffer(dfb, &buffer);
+        if (!ret) {
+            return mrb_directfb_event_buffer_value(mrb, buffer);
+        }
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value directfb_create_input_event_buffer(mrb_state *mrb, mrb_value self)
+{
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        mrb_int caps;
+        mrb_bool b;
+        mrb_get_args(mrb, "ib", &caps, &b);
+        DFBBoolean global = (b != FALSE)? DFB_TRUE : DFB_FALSE;
+        IDirectFBEventBuffer* buffer;
+        DFBResult ret = dfb->CreateInputEventBuffer(dfb, caps, global, &buffer);
+        if (!ret) {
+            return mrb_directfb_event_buffer_value(mrb, buffer);
         }
     }
     return mrb_nil_value();
@@ -324,14 +461,36 @@ void mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_define_class_method(mrb, dfb, "usleep", directfb_usleep, MRB_ARGS_REQ(1));
 
     mrb_define_method(mrb, dfb, "release", directfb_release, MRB_ARGS_NONE());
+
+    // cooperative level, video mode
     mrb_define_method(mrb, dfb, "set_cooperative_level", directfb_set_cooperative_level, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "set_video_mode", directfb_set_video_mode, MRB_ARGS_REQ(3));
+
+    // hardware capabilities
+    mrb_define_method(mrb, dfb, "get_device_description", directfb_get_device_description, MRB_ARGS_NONE());
+    mrb_define_method(mrb, dfb, "enum_video_modes", directfb_enum_video_modes, MRB_ARGS_REQ(1));
+
+    // surfaces & palettes
     mrb_define_method(mrb, dfb, "create_surface", directfb_create_surface, MRB_ARGS_REQ(1));
+
+    // screens
+    mrb_define_method(mrb, dfb, "enum_screens", directfb_enum_screens, MRB_ARGS_REQ(1));
+
+    // display layers
+    mrb_define_method(mrb, dfb, "enum_display_layers", directfb_enum_display_layers, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "get_display_layer", directfb_get_display_layer, MRB_ARGS_REQ(1));
+
+    // input devices
     mrb_define_method(mrb, dfb, "enum_input_devices", directfb_enum_input_devices, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "get_input_device", directfb_get_input_device, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, dfb, "create_event_buffer", directfb_create_event_buffer, MRB_ARGS_NONE());
+    mrb_define_method(mrb, dfb, "create_input_event_buffer", directfb_create_input_event_buffer, MRB_ARGS_REQ(2));
+
+    // media
     mrb_define_method(mrb, dfb, "create_image_provider", directfb_create_image_provider, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "create_font", directfb_create_font, MRB_ARGS_REQ(2));
+
+    // misc
     mrb_define_method(mrb, dfb, "suspend", directfb_suspend, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "resume", directfb_resume, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "wait_idle", directfb_wait_idle, MRB_ARGS_REQ(1));
