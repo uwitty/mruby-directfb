@@ -4,6 +4,7 @@
 #include <mruby/data.h>
 #include <mruby/class.h>
 #include <mruby/variable.h>
+#include <mruby/array.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -81,7 +82,7 @@ static mrb_value surface_release(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
-static mrb_value surface_capabilities(mrb_state *mrb, mrb_value self)
+static mrb_value surface_get_capabilities(mrb_state *mrb, mrb_value self)
 {
     IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
@@ -89,6 +90,22 @@ static mrb_value surface_capabilities(mrb_state *mrb, mrb_value self)
         DFBResult ret = surface->GetCapabilities(surface, &caps);
         if (!ret) {
             return mrb_fixnum_value(caps);
+        }
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value surface_get_position(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
+    if (surface != NULL) {
+        int x, y;
+        DFBResult ret = surface->GetPosition(surface, &x, &y);
+        if (!ret) {
+            mrb_value pos[2];
+            pos[0] = mrb_fixnum_value(x);
+            pos[1] = mrb_fixnum_value(y);
+            return mrb_ary_new_from_values(mrb, 2, pos);
         }
     }
     return mrb_nil_value();
@@ -120,6 +137,18 @@ static mrb_value surface_y(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value surface_get_size(mrb_state *mrb, mrb_value self)
+{
+    struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_surface_type);
+    if ((data != NULL) && (data->surface != NULL)) {
+        mrb_value size[2];
+        size[0] = mrb_fixnum_value(data->width);
+        size[1] = mrb_fixnum_value(data->height);
+        return mrb_ary_new_from_values(mrb, 2, size);
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value surface_width(mrb_state *mrb, mrb_value self)
 {
     struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_surface_type);
@@ -138,7 +167,7 @@ static mrb_value surface_height(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
-static mrb_value surface_pixel_format(mrb_state *mrb, mrb_value self)
+static mrb_value surface_get_pixel_format(mrb_state *mrb, mrb_value self)
 {
     IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
@@ -151,7 +180,7 @@ static mrb_value surface_pixel_format(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
-static mrb_value surface_acceleration_mask(mrb_state *mrb, mrb_value self)
+static mrb_value surface_get_acceleration_mask(mrb_state *mrb, mrb_value self)
 {
     IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     if (surface != NULL) {
@@ -424,13 +453,15 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
     mrb_define_method(mrb, surface, "release", surface_release, MRB_ARGS_NONE());
 
     // retrieving information
-    mrb_define_method(mrb, surface, "capabilities", surface_capabilities, MRB_ARGS_NONE());
+    mrb_define_method(mrb, surface, "get_capabilities", surface_get_capabilities, MRB_ARGS_NONE());
+    mrb_define_method(mrb, surface, "get_position", surface_get_position, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "x", surface_x, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "y", surface_y, MRB_ARGS_NONE());
+    mrb_define_method(mrb, surface, "get_size", surface_get_size, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "width", surface_width, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "height", surface_height, MRB_ARGS_NONE());
-    mrb_define_method(mrb, surface, "pixel_format", surface_pixel_format, MRB_ARGS_NONE());
-    mrb_define_method(mrb, surface, "acceleration_mask", surface_acceleration_mask, MRB_ARGS_OPT(1));
+    mrb_define_method(mrb, surface, "get_pixel_format", surface_get_pixel_format, MRB_ARGS_NONE());
+    mrb_define_method(mrb, surface, "get_acceleration_mask", surface_get_acceleration_mask, MRB_ARGS_OPT(1));
 
     // buffer operations
     mrb_define_method(mrb, surface, "flip", surface_flip, MRB_ARGS_OPT(2));
