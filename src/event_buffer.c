@@ -175,9 +175,9 @@ static mrb_value event_buffer_enable_statistics(mrb_state* mrb, mrb_value self)
 {
     struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
     if ((data != NULL) && (data->event_buffer != NULL)) {
-        mrb_int b;
+        mrb_bool b;
         mrb_get_args(mrb, "b", &b);
-        DFBBoolean enable = (b != 0)? DFB_TRUE : DFB_FALSE;
+        DFBBoolean enable = (b != FALSE)? DFB_TRUE : DFB_FALSE;
         DFBResult ret = data->event_buffer->EnableStatistics(data->event_buffer, enable);
         return mrb_fixnum_value(ret);
     }

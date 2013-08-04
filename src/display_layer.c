@@ -322,9 +322,9 @@ static mrb_value display_layer_switch_context(mrb_state *mrb, mrb_value self)
     DFBResult ret = -1;
     IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
-        mrb_int b;
+        mrb_bool b;
         mrb_get_args(mrb, "b", &b);
-        DFBBoolean exclusive = (b != 0)? DFB_TRUE : DFB_FALSE;
+        DFBBoolean exclusive = (b != FALSE)? DFB_TRUE : DFB_FALSE;
         ret = layer->SwitchContext(layer, exclusive);
     }
     return mrb_fixnum_value(ret);
