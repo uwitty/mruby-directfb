@@ -199,6 +199,35 @@ static mrb_value surface_get_acceleration_mask(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value surface_lock(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
+    if (surface != NULL) {
+        mrb_int flags = 0;
+        mrb_get_args(mrb, "i", &flags);
+        void* p = NULL;
+        int pitch = 0;
+        DFBResult ret = surface->Lock(surface, flags, &p, &pitch);
+        if (!ret) {
+            mrb_value a[2];
+            a[0] = mrb_voidp_value(mrb, p);
+            a[1] = mrb_fixnum_value(pitch);
+            return mrb_ary_new_from_values(mrb, 2, a);
+        }
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value surface_unlock(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
+    DFBResult ret = -1;
+    if (surface != NULL) {
+        ret = surface->Unlock(surface);
+    }
+    return mrb_fixnum_value(ret);
+}
+
 static mrb_value surface_flip(mrb_state *mrb, mrb_value self)
 {
     IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
@@ -464,6 +493,8 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
     mrb_define_method(mrb, surface, "get_acceleration_mask", surface_get_acceleration_mask, MRB_ARGS_OPT(1));
 
     // buffer operations
+    mrb_define_method(mrb, surface, "lock_impl", surface_lock, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, surface, "unlock", surface_unlock, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "flip", surface_flip, MRB_ARGS_OPT(2));
     mrb_define_method(mrb, surface, "clear", surface_clear, MRB_ARGS_REQ(4));
 

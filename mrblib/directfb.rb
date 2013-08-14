@@ -18,5 +18,17 @@ class DirectFB
     layer.release if layer
     dfb.release if dfb
   end
+
+  class Surface
+    def lock(flags)
+      if block_given?
+        ptr, pitch = self.lock_impl flags
+        yield ptr, pitch
+        self.unlock if ptr
+      else
+        self.lock_impl flags
+      end
+    end
+  end
 end
 
