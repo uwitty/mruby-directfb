@@ -36,18 +36,18 @@ DirectFB.run({width:960, height:540}) do |dfb, layer, primary|
     primary.set_color(16, 16, 32, 255)
     primary.fill_rectangle(0, 0, primary.width, primary.height)
     
-    tile = dfb.create_surface({caps:DSCAPS_PREMULTIPLIED, width:128, height:128, pixelformat:DSPF_ARGB})
+    tile = dfb.create_surface({caps:DSCAPS_PREMULTIPLIED, width:60, height:60, pixelformat:DSPF_ARGB})
     
     tile.clear(0, 0, 0, 0)
     tile.set_color(0, 0, 255, 255);
-    tile.draw_line(0, 0, 128, 0)
-    tile.draw_line(0, 0, 0, 128)
-    tile.draw_line(0, 0, 128, 128)
-    tile.draw_line(128, 0, 0, 128)
+    tile.draw_line(0, 0, 60, 0)
+    tile.draw_line(0, 0, 0, 60)
+    tile.draw_line(0, 0, 60, 60)
+    tile.draw_line(60, 0, 0, 60)
 
     primary.set_blitting_flags(DSBLIT_BLEND_ALPHACHANNEL)
     ret = primary.tile_blit(tile, nil, 0, 0);
-    DirectFB.error('DirectFB::Surface#stretch_blit()', ret)
+    DirectFB.error('DirectFB::Surface#tile_blit()', ret)
     
     primary.flip()
     
