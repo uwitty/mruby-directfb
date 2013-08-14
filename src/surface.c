@@ -218,6 +218,19 @@ static mrb_value surface_lock(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value surface_get_framebuffer_offset(mrb_state *mrb, mrb_value self)
+{
+    IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
+    if (surface != NULL) {
+        int offset = -1;
+        DFBResult ret = surface->GetFramebufferOffset(surface, &offset);
+        if (!ret) {
+            return mrb_fixnum_value(offset);
+        }
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value surface_unlock(mrb_state *mrb, mrb_value self)
 {
     IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
@@ -494,6 +507,7 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
 
     // buffer operations
     mrb_define_method(mrb, surface, "lock_impl", surface_lock, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, surface, "get_framebuffer_offset", surface_get_framebuffer_offset, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "unlock", surface_unlock, MRB_ARGS_NONE());
     mrb_define_method(mrb, surface, "flip", surface_flip, MRB_ARGS_OPT(2));
     mrb_define_method(mrb, surface, "clear", surface_clear, MRB_ARGS_REQ(4));
