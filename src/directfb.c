@@ -14,6 +14,7 @@
 #include "directfb_descriptions.h"
 #include "directfb_display_layer.h"
 #include "directfb_surface.h"
+#include "directfb_window.h"
 #include "directfb_font.h"
 #include "directfb_image_provider.h"
 #include "directfb_input_device.h"
@@ -449,6 +450,7 @@ void mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_directfb_define_misc(mrb, dfb);
     mrb_directfb_define_surface(mrb, dfb);
     mrb_directfb_define_display_layer(mrb, dfb);
+    mrb_directfb_define_window(mrb, dfb);
     mrb_directfb_define_font(mrb, dfb);
     mrb_directfb_define_image_provider(mrb, dfb);
     mrb_directfb_define_input_device(mrb, dfb);
