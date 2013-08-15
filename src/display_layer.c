@@ -11,6 +11,7 @@
 #include <directfb.h>
 
 #include "directfb_surface.h"
+#include "directfb_window.h"
 #include "directfb_constants.h"
 #include "directfb_descriptions.h"
 #include "directfb_misc.h"
@@ -229,6 +230,40 @@ static mrb_value display_layer_test_configuration(mrb_state *mrb, mrb_value self
     return mrb_nil_value();
 }
 
+static mrb_value display_layer_create_window(mrb_state *mrb, mrb_value self)
+{
+    DFBResult ret = -1;
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
+    if (layer != NULL) {
+        IDirectFBWindow* window = NULL;
+        mrb_value desc_object;
+        DFBWindowDescription desc;
+        mrb_get_args(mrb, "o", &desc_object);
+        mrb_directfb_window_description_get(mrb, desc_object, &desc);
+        ret = layer->CreateWindow(layer, &desc, &window);
+        if (!ret) {
+            return mrb_directfb_window_value(mrb, window);
+        }
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value display_layer_get_window(mrb_state *mrb, mrb_value self)
+{
+    DFBResult ret = -1;
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
+    if (layer != NULL) {
+        IDirectFBWindow* window = NULL;
+        mrb_int win_id;
+        mrb_get_args(mrb, "i", &win_id);
+        ret = layer->GetWindow(layer, win_id, &window);
+        if (!ret) {
+            return mrb_directfb_window_value(mrb, window);
+        }
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value display_layer_enable_cursor(mrb_state *mrb, mrb_value self)
 {
     DFBResult ret = -1;
@@ -362,6 +397,10 @@ void mrb_directfb_define_display_layer(mrb_state* mrb, struct RClass* outer)
     mrb_define_method(mrb, display_layer, "get_configuration", display_layer_get_configuration, MRB_ARGS_NONE());
     mrb_define_method(mrb, display_layer, "test_configuration", display_layer_test_configuration, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, display_layer, "set_configuration", display_layer_set_configuration, MRB_ARGS_REQ(1));
+
+    // windows
+    mrb_define_method(mrb, display_layer, "create_window", display_layer_create_window, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, display_layer, "get_window", display_layer_get_window, MRB_ARGS_REQ(1));
 
     // cursor handling
     mrb_define_method(mrb, display_layer, "enable_cursor", display_layer_enable_cursor, MRB_ARGS_REQ(1));
