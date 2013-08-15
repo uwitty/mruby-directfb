@@ -237,3 +237,18 @@ mrb_value mrb_directfb_screen_description_new(mrb_state *mrb, const DFBScreenDes
     return value;
 }
 
+void mrb_directfb_window_description_get(mrb_state *mrb, mrb_value hash, DFBWindowDescription* desc)
+{
+    memset(desc, 0, sizeof(*desc));
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, width       , DWDESC_WIDTH       );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, height      , DWDESC_HEIGHT      );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, pixelformat , DWDESC_PIXELFORMAT );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, posx        , DWDESC_POSX        );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, posy        , DWDESC_POSY        );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, surface_caps, DWDESC_SURFACE_CAPS);
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, parent_id   , DWDESC_PARENT      );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, options     , DWDESC_OPTIONS     );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, stacking    , DWDESC_STACKING    );
+    DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, resource_id , DWDESC_RESOURCE_ID );
+}
+

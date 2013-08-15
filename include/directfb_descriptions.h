@@ -31,3 +31,5 @@ mrb_value mrb_directfb_graphics_device_description_new(mrb_state *mrb, const DFB
 
 mrb_value mrb_directfb_screen_description_new(mrb_state *mrb, const DFBScreenDescription* desc);
 
+void mrb_directfb_window_description_get(mrb_state *mrb, mrb_value hash, DFBWindowDescription* desc);
+
