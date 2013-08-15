@@ -47,7 +47,7 @@ mrb_value mrb_directfb_event_buffer_value(mrb_state* mrb, IDirectFBEventBuffer* 
     return mrb_directfb_event_buffer_wrap(mrb, c, event_buffer);
 }
 
-IDirectFBEventBuffer* mrb_directfb_event_buffer_get(mrb_state *mrb, mrb_value value)
+IDirectFBEventBuffer* mrb_directfb_event_buffer(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_event_buffer_type);
     if (data != NULL) {
