@@ -483,7 +483,7 @@ void mrb_mruby_directfb_gem_init(mrb_state* mrb)
 
     // input devices
     mrb_define_method(mrb, dfb, "enum_input_devices", directfb_enum_input_devices, MRB_ARGS_REQ(1));
-    mrb_define_method(mrb, dfb, "get_input_device", directfb_get_input_device, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, dfb, "get_input_device_impl", directfb_get_input_device, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "create_event_buffer", directfb_create_event_buffer, MRB_ARGS_NONE());
     mrb_define_method(mrb, dfb, "create_input_event_buffer", directfb_create_input_event_buffer, MRB_ARGS_REQ(2));
 

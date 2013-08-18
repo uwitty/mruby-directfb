@@ -58,6 +58,19 @@ class DirectFB
     end
   end
 
+  def get_input_device(device_id, &block)
+    if block
+      device = get_input_device_impl(device_id)
+      begin
+        block.call(device)
+      ensure
+        device.release if device
+      end
+    else
+      get_input_device_impl(device_id)
+    end
+  end
+
   class Surface
     def lock(flags, &block)
       if block
