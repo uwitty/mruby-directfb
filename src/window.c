@@ -57,7 +57,6 @@ mrb_value mrb_directfb_window_wrap(mrb_state* mrb, struct RClass* c, IDirectFBWi
     data->height = height;
 
     mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_window_type, data));
-    mrb_iv_set(mrb, obj, mrb_intern_cstr(mrb, "font"), mrb_nil_value());
     return obj;
 }
 
@@ -142,19 +141,15 @@ static mrb_value window_create_event_buffer(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
-#if 0
 static mrb_value window_attach_event_buffer(mrb_state *mrb, mrb_value self)
 {
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
     if (window != NULL) {
-        mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "attached_event_buffer"), mrb_nil_value());
-
         mrb_value buffer_object;
         mrb_get_args(mrb, "o", &buffer_object);
         IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
         DFBResult ret = window->AttachEventBuffer(window, buffer);
         if (!ret) {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "attached_event_buffer"), buffer_object);
             return mrb_directfb_event_buffer_value(mrb, buffer);
         }
     }
@@ -172,13 +167,11 @@ static mrb_value window_detach_event_buffer(mrb_state *mrb, mrb_value self)
         IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
         ret = window->DetachEventBuffer(window, buffer);
         if (!ret) {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "attached_event_buffer"), mrb_nil_value());
             return mrb_directfb_event_buffer_value(mrb, buffer);
         }
     }
     return mrb_fixnum_value(ret);
 }
-#endif
 
 static mrb_value window_enable_events(mrb_state *mrb, mrb_value self)
 {
@@ -608,8 +601,8 @@ void mrb_directfb_define_window(mrb_state* mrb, struct RClass* outer)
 
     // event handling
     mrb_define_method(mrb, window, "create_event_buffer", window_create_event_buffer, MRB_ARGS_NONE());
-    //mrb_define_method(mrb, window, "attach_event_buffer", window_attach_event_buffer, MRB_ARGS_REQ(1));
-    //mrb_define_method(mrb, window, "detach_event_buffer", window_detach_event_buffer, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, window, "attach_event_buffer", window_attach_event_buffer, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, window, "detach_event_buffer", window_detach_event_buffer, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, window, "enable_events", window_enable_events, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, window, "disable_events", window_disable_events, MRB_ARGS_REQ(1));
 
