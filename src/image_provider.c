@@ -49,7 +49,6 @@ mrb_value mrb_directfb_image_provider_wrap(mrb_state* mrb, struct RClass* c, IDi
     data->image_provider = image_provider;
 
     mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_image_provider_type, data));
-    mrb_iv_set(mrb, obj, mrb_intern_cstr(mrb, "font"), mrb_nil_value());
     return obj;
 }
 
@@ -179,7 +178,6 @@ static mrb_value image_provider_write_back(mrb_state *mrb, mrb_value self)
         IDirectFBSurface* surface = mrb_directfb_surface(mrb, surface_object);
         DFBRectangle* rect = mrb_directfb_rectangle(mrb, rect_object);
         ret = provider->WriteBack(provider, surface, rect, filename);
-        printf("end:%s()\n", __func__);
     }
     return mrb_fixnum_value(ret);
 }
