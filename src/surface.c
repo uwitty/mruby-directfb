@@ -368,10 +368,15 @@ static mrb_value surface_stretch_blit(mrb_state *mrb, mrb_value self)
     IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
-        mrb_value source_object;
-        mrb_get_args(mrb, "o", &source_object);
-        IDirectFBSurface* source = mrb_directfb_surface(mrb, source_object);
-        ret = surface->StretchBlit(surface, source, NULL, NULL);
+        mrb_value src_object;
+        mrb_value src_rect_object;
+        mrb_value dst_rect_object;
+        mrb_get_args(mrb, "ooo", &src_object, &src_rect_object, &dst_rect_object);
+        IDirectFBSurface* src = mrb_directfb_surface(mrb, src_object);
+        DFBRectangle* src_rect = mrb_directfb_rectangle(mrb, src_rect_object);
+        DFBRectangle* dst_rect = mrb_directfb_rectangle(mrb, dst_rect_object);
+        ret = surface->StretchBlit(surface, src, src_rect, dst_rect);
+        DirectFBError("StretchBlit", ret);
     }
     return mrb_fixnum_value(ret);
 }
@@ -522,7 +527,7 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
     mrb_define_method(mrb, surface, "set_blitting_flags", surface_set_blitting_flags, MRB_ARGS_REQ(4));
     mrb_define_method(mrb, surface, "blit", surface_blit, MRB_ARGS_REQ(4));
     mrb_define_method(mrb, surface, "tile_blit", surface_tile_blit, MRB_ARGS_REQ(4));
-    mrb_define_method(mrb, surface, "stretch_blit", surface_stretch_blit, MRB_ARGS_REQ(4));
+    mrb_define_method(mrb, surface, "stretch_blit", surface_stretch_blit, MRB_ARGS_REQ(3));
 
     // drawing functions
     mrb_define_method(mrb, surface, "set_drawing_flags", surface_set_drawing_flags, MRB_ARGS_REQ(1));
