@@ -246,7 +246,7 @@ static mrb_value surface_flip(mrb_state *mrb, mrb_value self)
     IDirectFBSurface* surface = mrb_directfb_surface(mrb, self);
     DFBResult ret = -1;
     if (surface != NULL) {
-        mrb_value o;
+        mrb_value o = mrb_nil_value();
         mrb_int flags = 0;
         mrb_get_args(mrb, "|oi", &o, &flags);
         ret = surface->Flip(surface, mrb_directfb_region(mrb, o), flags);
@@ -437,7 +437,9 @@ static mrb_value surface_set_font(mrb_state *mrb, mrb_value self)
         mrb_get_args(mrb, "o", &font_object);
         IDirectFBFont* font = mrb_directfb_font(mrb, font_object);
         ret = surface->SetFont(surface, font);
-        mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "font"), font_object);
+        if (!ret) {
+            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "font"), font_object);
+        }
     }
     return mrb_fixnum_value(ret);
 }
@@ -523,7 +525,7 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
     mrb_define_method(mrb, surface, "set_porter_duff", surface_set_porter_duff, MRB_ARGS_REQ(1));
 
     // blitting functions
-    mrb_define_method(mrb, surface, "set_blitting_flags", surface_set_blitting_flags, MRB_ARGS_REQ(4));
+    mrb_define_method(mrb, surface, "set_blitting_flags", surface_set_blitting_flags, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, surface, "blit", surface_blit, MRB_ARGS_REQ(4));
     mrb_define_method(mrb, surface, "tile_blit", surface_tile_blit, MRB_ARGS_REQ(4));
     mrb_define_method(mrb, surface, "stretch_blit", surface_stretch_blit, MRB_ARGS_REQ(3));
