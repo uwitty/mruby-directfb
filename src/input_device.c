@@ -130,12 +130,28 @@ static mrb_value input_device_create_event_buffer(mrb_state *mrb, mrb_value self
 
 static mrb_value input_device_attach_event_buffer(mrb_state *mrb, mrb_value self)
 {
-    return mrb_nil_value();
+    DFBResult ret = -1;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
+        mrb_value event_buffer_object;
+        mrb_get_args(mrb, "o", &event_buffer_object);
+        IDirectFBEventBuffer* event_buffer = mrb_directfb_event_buffer(mrb, event_buffer_object);
+        DFBResult ret = device->AttachEventBuffer(device, event_buffer);
+    }
+    return mrb_fixnum_value(ret);
 }
 
 static mrb_value input_device_detach_event_buffer(mrb_state *mrb, mrb_value self)
 {
-    return mrb_nil_value();
+    DFBResult ret = -1;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
+        mrb_value event_buffer_object;
+        mrb_get_args(mrb, "o", &event_buffer_object);
+        IDirectFBEventBuffer* event_buffer = mrb_directfb_event_buffer(mrb, event_buffer_object);
+        DFBResult ret = device->DetachEventBuffer(device, event_buffer);
+    }
+    return mrb_fixnum_value(ret);
 }
 
 static mrb_value input_device_get_key_state(mrb_state *mrb, mrb_value self)
