@@ -1,5 +1,7 @@
 class DirectFB
-  def self.run(layer_conf=nil)
+  include DirectFB::Constants
+
+  def self.run(layer_conf=nil, &block)
     unless @initialized
       ret = DirectFB.init()
       DirectFB.error('DirectFB.init()', ret)
@@ -13,7 +15,7 @@ class DirectFB
       layer.set_configuration(layer_conf) if layer_conf
       primary = layer.get_surface()
 
-      yield dfb, layer, primary
+      block.call(dfb, layer, primary)
     ensure
       primary.release if primary
       layer.release if layer
@@ -21,7 +23,7 @@ class DirectFB
     end
   end
 
-  def self.run2(layer_conf=nil)
+  def self.run2(layer_conf=nil, &block)
     unless @initialized
       ret = DirectFB.init()
       DirectFB.error('DirectFB.init()', ret)
@@ -34,19 +36,19 @@ class DirectFB
       layer.set_cooperative_level(DLSCL_ADMINISTRATIVE)
       layer.set_configuration(layer_conf) if layer_conf
 
-      yield dfb, layer
+      block.call(dfb, layer)
     ensure
       layer.release if layer
       dfb.release if dfb
     end
   end
 
-  def create_image_provider(filename)
-    if block_given?
+  def create_image_provider(filename, &block)
+    if block
       provider = create_image_provider_impl(filename)
       if provider
         begin
-          yield provider
+          block.call(provider)
         ensure
           provider.release
         end
@@ -57,17 +59,31 @@ class DirectFB
   end
 
   class Surface
-    def lock(flags)
-      if block_given?
+    def lock(flags, &block)
+      if block
         ptr, pitch = self.lock_impl flags
         begin
-          yield ptr, pitch
+          block.call(ptr, pitch)
         ensure
           self.unlock if ptr
         end
       else
-        self.lock_impl flags
+        self.lock_impl(flags)
       end
+    end
+  end
+
+  class WindowEvent
+    def to_s
+      s  = super()
+      s += "{window_id:#{window_id}, type:#{type.to_s(16)}"
+
+      s += ", x:#{x}, y:#{y}" if (type & DWET_POSITION) != 0
+      s += ", w:#{w}, h:#{h}" if (type & DWET_SIZE) != 0
+      s += ", cx:#{cx}, cy:#{cy}" if (type & DWET_MOTION) != 0
+
+      s += '}'
+      s
     end
   end
 end
