@@ -52,7 +52,7 @@ mrb_value mrb_directfb_region_value(mrb_state* mrb, int x1, int y1, int x2, int 
 
 DFBRegion* mrb_directfb_region(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_region_data* data = (struct mrb_directfb_region_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_region_type);
+    struct mrb_directfb_region_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_region_type, struct mrb_directfb_region_data);
     return (data != NULL)? &data->region : NULL;
 }
 
@@ -141,7 +141,7 @@ mrb_value mrb_directfb_rectangle_value(mrb_state* mrb, int x, int y, int w, int 
 
 DFBRectangle* mrb_directfb_rectangle(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_rectangle_data* data = (struct mrb_directfb_rectangle_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_rectangle_type);
+    struct mrb_directfb_rectangle_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_rectangle_type, struct mrb_directfb_rectangle_data);
     return (data != NULL)? &data->rectangle : NULL;
 }
 
@@ -270,7 +270,7 @@ mrb_value mrb_directfb_input_device_keymap_entry_value(mrb_state* mrb, DFBInputD
 
 DFBInputDeviceKeymapEntry* mrb_directfb_input_device_keymap_entry(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_input_device_keymap_entry_data* data = (struct mrb_directfb_input_device_keymap_entry_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_input_device_keymap_entry_type);
+    struct mrb_directfb_input_device_keymap_entry_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_input_device_keymap_entry_type, struct mrb_directfb_input_device_keymap_entry_data);
     return (data != NULL)? &data->input_device_keymap_entry : NULL;
 }
 
@@ -351,7 +351,7 @@ mrb_value mrb_directfb_input_event_value(mrb_state* mrb, DFBInputEvent* input_ev
 
 DFBInputEvent* mrb_directfb_input_event(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_input_event_data* data = (struct mrb_directfb_input_event_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_input_event_type);
+    struct mrb_directfb_input_event_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_input_event_type, struct mrb_directfb_input_event_data);
     return (data != NULL)? &data->input_event : NULL;
 }
 
@@ -518,7 +518,7 @@ mrb_value mrb_directfb_window_event_value(mrb_state* mrb, DFBWindowEvent* window
 
 DFBWindowEvent* mrb_directfb_get_window_event(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_window_event_data* data = (struct mrb_directfb_window_event_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_window_event_type);
+    struct mrb_directfb_window_event_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_window_event_type, struct mrb_directfb_window_event_data);
     return (data != NULL)? &data->window_event : NULL;
 }
 
@@ -699,7 +699,7 @@ mrb_value mrb_directfb_video_provider_event_value(mrb_state* mrb, DFBVideoProvid
 
 DFBVideoProviderEvent* mrb_directfb_get_video_provider_event(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_video_provider_event_data* data = (struct mrb_directfb_video_provider_event_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_video_provider_event_type);
+    struct mrb_directfb_video_provider_event_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_video_provider_event_type, struct mrb_directfb_video_provider_event_data);
     return (data != NULL)? &data->video_provider_event : NULL;
 }
 
@@ -820,7 +820,7 @@ mrb_value mrb_directfb_event_buffer_stats_value(mrb_state* mrb, DFBEventBufferSt
 
 DFBEventBufferStats* mrb_directfb_get_event_buffer_stats(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_event_buffer_stats_data* data = (struct mrb_directfb_event_buffer_stats_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_event_buffer_stats_type);
+    struct mrb_directfb_event_buffer_stats_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_event_buffer_stats_type, struct mrb_directfb_event_buffer_stats_data);
     return (data != NULL)? &data->stats : NULL;
 }
 

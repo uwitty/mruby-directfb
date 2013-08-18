@@ -53,8 +53,7 @@ static mrb_value mrb_directfb_wrap(mrb_state* mrb, struct RClass* c, IDirectFB* 
 
 IDirectFB* get_directfb(mrb_state* mrb, mrb_value value)
 {
-    struct mrb_directfb_data* data = (struct mrb_directfb_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_type);
-    ;
+    struct mrb_directfb_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_type, struct mrb_directfb_data);
     return (data != NULL)? data->dfb : NULL;
 }
 
@@ -106,7 +105,7 @@ static mrb_value directfb_usleep(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_data* data = (struct mrb_directfb_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_type);
+    struct mrb_directfb_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_type, struct mrb_directfb_data);
     if ((data != NULL) && (data->dfb != NULL)) {
         data->dfb->Release(data->dfb);
         data->dfb = NULL;
@@ -277,7 +276,7 @@ static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
     mrb_int layer_id;
     mrb_get_args(mrb, "i", &layer_id);
 
-    struct mrb_directfb_data* data = (struct mrb_directfb_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_type);
+    struct mrb_directfb_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_type, struct mrb_directfb_data);
     if (data->dfb != NULL) {
         IDirectFBDisplayLayer* layer;
         DFBResult ret = data->dfb->GetDisplayLayer(data->dfb, layer_id, &layer);

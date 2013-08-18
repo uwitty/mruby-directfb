@@ -53,7 +53,7 @@ mrb_value mrb_directfb_font_value(mrb_state* mrb, IDirectFBFont* font)
 
 IDirectFBFont* mrb_directfb_font(mrb_state* mrb, mrb_value value)
 {
-    struct mrb_directfb_font_data* data = (struct mrb_directfb_font_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_font_type);
+    struct mrb_directfb_font_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_font_type, struct mrb_directfb_font_data);
     return (data != NULL)? data->font : NULL;
 }
 
@@ -62,7 +62,7 @@ IDirectFBFont* mrb_directfb_font(mrb_state* mrb, mrb_value value)
 
 static mrb_value font_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_font_data* data = (struct mrb_directfb_font_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_font_type);
+    struct mrb_directfb_font_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_font_type, struct mrb_directfb_font_data);
     if ((data != NULL) && (data->font != NULL)) {
         data->font->Release(data->font);
         data->font = NULL;
@@ -155,7 +155,6 @@ static mrb_value font_get_string_width(mrb_state *mrb, mrb_value self)
     int bytes = strlen(s);
     int width;
 
-    fprintf(stderr, "%s(): \"%s\" bytes:%d\n", __func__, s, bytes);
     IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         if (!font->GetStringWidth(font, s, bytes, &width)) {

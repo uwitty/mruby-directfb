@@ -55,7 +55,7 @@ mrb_value mrb_directfb_image_provider_wrap(mrb_state* mrb, struct RClass* c, IDi
 
 IDirectFBImageProvider* mrb_directfb_image_provider(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_image_provider_data* data = (struct mrb_directfb_image_provider_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_image_provider_type);
+    struct mrb_directfb_image_provider_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_image_provider_type, struct mrb_directfb_image_provider_data);
     if (data != NULL) {
         return data->image_provider;
     } else {
@@ -79,7 +79,7 @@ static struct mrb_directfb_image_provider_data* setup_render_callback(mrb_state 
 
 static mrb_value image_provider_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_image_provider_data* data = (struct mrb_directfb_image_provider_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_image_provider_type);
+    struct mrb_directfb_image_provider_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_image_provider_type, struct mrb_directfb_image_provider_data);
     if ((data != NULL) && (data->image_provider != NULL)) {
         data->image_provider->Release(data->image_provider);
         data->image_provider = NULL;
@@ -122,10 +122,13 @@ static mrb_value image_provider_render_to(mrb_state *mrb, mrb_value self)
     if (provider != NULL) {
         mrb_value surface_object;
         mrb_value rect_object;
-        mrb_get_args(mrb, "oo", &surface_object, &rect_object);
+        int num = mrb_get_args(mrb, "o|o", &surface_object, &rect_object);
 
         IDirectFBSurface* surface = mrb_directfb_surface(mrb, surface_object);
-        DFBRectangle* rect = mrb_directfb_rectangle(mrb, rect_object);
+        DFBRectangle* rect = NULL;
+        if ((num >= 2) && (!mrb_nil_p(rect_object))) {
+            rect = mrb_directfb_rectangle(mrb, rect_object);
+        }
         ret = provider->RenderTo(provider, surface, rect);
     }
     return mrb_fixnum_value(ret);

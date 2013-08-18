@@ -53,7 +53,7 @@ mrb_value mrb_directfb_display_layer_value(mrb_state* mrb, IDirectFBDisplayLayer
 
 IDirectFBDisplayLayer* mrb_directfb_display_layer(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_display_layer_data* data = (struct mrb_directfb_display_layer_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_display_layer_type);
+    struct mrb_directfb_display_layer_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_display_layer_type, struct mrb_directfb_display_layer_data);
     if (data != NULL) {
         return data->layer;
     } else {
@@ -66,7 +66,7 @@ IDirectFBDisplayLayer* mrb_directfb_display_layer(mrb_state *mrb, mrb_value valu
 
 static mrb_value display_layer_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_display_layer_data* data = (struct mrb_directfb_display_layer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_display_layer_type);
+    struct mrb_directfb_display_layer_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_display_layer_type, struct mrb_directfb_display_layer_data);
     if ((data != NULL) && (data->layer != NULL)) {
         data->layer->Release(data->layer);
         data->layer = NULL;

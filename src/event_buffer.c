@@ -49,7 +49,7 @@ mrb_value mrb_directfb_event_buffer_value(mrb_state* mrb, IDirectFBEventBuffer* 
 
 IDirectFBEventBuffer* mrb_directfb_event_buffer(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_event_buffer_type);
+    struct mrb_directfb_event_buffer_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_event_buffer_type, struct mrb_directfb_event_buffer_data);
     if (data != NULL) {
         return data->event_buffer;
     } else {
@@ -62,7 +62,7 @@ IDirectFBEventBuffer* mrb_directfb_event_buffer(mrb_state *mrb, mrb_value value)
 
 static mrb_value event_buffer_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
+    struct mrb_directfb_event_buffer_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_event_buffer_type, struct mrb_directfb_event_buffer_data);
     if ((data != NULL) && (data->event_buffer != NULL)) {
         data->event_buffer->Release(data->event_buffer);
         data->event_buffer = NULL;
@@ -73,9 +73,9 @@ static mrb_value event_buffer_release(mrb_state *mrb, mrb_value self)
 static mrb_value event_buffer_reset(mrb_state* mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
-        ret = data->event_buffer->Reset(data->event_buffer);
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
+        ret = buffer->Reset(buffer);
     }
     return mrb_fixnum_value(ret);
 }
@@ -83,9 +83,9 @@ static mrb_value event_buffer_reset(mrb_state* mrb, mrb_value self)
 static mrb_value event_buffer_wait_for_event(mrb_state* mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
-        ret = data->event_buffer->WaitForEvent(data->event_buffer);
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
+        ret = buffer->WaitForEvent(buffer);
     }
     return mrb_fixnum_value(ret);
 }
@@ -93,21 +93,21 @@ static mrb_value event_buffer_wait_for_event(mrb_state* mrb, mrb_value self)
 static mrb_value event_buffer_wait_for_event_with_timeout(mrb_state* mrb, mrb_value self)
 {
     DFBResult ret = -1;
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
         mrb_int secs, msecs;
         mrb_get_args(mrb, "ii", &secs, &msecs);
-        ret = data->event_buffer->WaitForEventWithTimeout(data->event_buffer, secs, msecs);
+        ret = buffer->WaitForEventWithTimeout(buffer, secs, msecs);
     }
     return mrb_fixnum_value(ret);
 }
 
 static mrb_value event_buffer_get_event(mrb_state* mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
         DFBEvent event;
-        DFBResult ret = data->event_buffer->GetEvent(data->event_buffer, &event);
+        DFBResult ret = buffer->GetEvent(buffer, &event);
         if (!ret) {
             return mrb_directfb_event_value(mrb, &event);
         }
@@ -117,10 +117,10 @@ static mrb_value event_buffer_get_event(mrb_state* mrb, mrb_value self)
 
 static mrb_value event_buffer_peek_event(mrb_state* mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
         DFBEvent event;
-        DFBResult ret = data->event_buffer->PeekEvent(data->event_buffer, &event);
+        DFBResult ret = buffer->PeekEvent(buffer, &event);
         if (!ret) {
             return mrb_directfb_event_value(mrb, &event);
         }
@@ -130,9 +130,9 @@ static mrb_value event_buffer_peek_event(mrb_state* mrb, mrb_value self)
 
 static mrb_value event_buffer_has_event(mrb_state* mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
-        DFBResult ret = data->event_buffer->HasEvent(data->event_buffer);
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
+        DFBResult ret = buffer->HasEvent(buffer);
         return (ret == DFB_OK)? mrb_true_value() : mrb_false_value();
     }
 
@@ -141,13 +141,13 @@ static mrb_value event_buffer_has_event(mrb_state* mrb, mrb_value self)
 
 static mrb_value event_buffer_post_event(mrb_state* mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
         mrb_value event_object;
         mrb_get_args(mrb, "o", &event_object);
         DFBEvent event;
         mrb_directfb_event(mrb, event_object, &event);
-        DFBResult ret = data->event_buffer->PostEvent(data->event_buffer, &event);
+        DFBResult ret = buffer->PostEvent(buffer, &event);
         return mrb_fixnum_value(ret);
     }
     return mrb_nil_value();
@@ -155,9 +155,9 @@ static mrb_value event_buffer_post_event(mrb_state* mrb, mrb_value self)
 
 static mrb_value event_buffer_wake_up(mrb_state* mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
-        DFBResult ret = data->event_buffer->WakeUp(data->event_buffer);
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
+        DFBResult ret = buffer->WakeUp(buffer);
         return mrb_fixnum_value(ret);
     }
 
@@ -173,12 +173,12 @@ static mrb_value event_buffer_create_file_descriptor(mrb_state* mrb, mrb_value s
 
 static mrb_value event_buffer_enable_statistics(mrb_state* mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
         mrb_bool b;
         mrb_get_args(mrb, "b", &b);
         DFBBoolean enable = (b != FALSE)? DFB_TRUE : DFB_FALSE;
-        DFBResult ret = data->event_buffer->EnableStatistics(data->event_buffer, enable);
+        DFBResult ret = buffer->EnableStatistics(buffer, enable);
         return mrb_fixnum_value(ret);
     }
 
@@ -187,10 +187,10 @@ static mrb_value event_buffer_enable_statistics(mrb_state* mrb, mrb_value self)
 
 static mrb_value event_buffer_get_statistics(mrb_state* mrb, mrb_value self)
 {
-    struct mrb_directfb_event_buffer_data* data = (struct mrb_directfb_event_buffer_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_event_buffer_type);
-    if ((data != NULL) && (data->event_buffer != NULL)) {
+    IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
+    if (buffer != NULL) {
         DFBEventBufferStats stats;
-        DFBResult ret = data->event_buffer->GetStatistics(data->event_buffer, &stats);
+        DFBResult ret = buffer->GetStatistics(buffer, &stats);
         if (!ret) {
             return mrb_directfb_event_buffer_stats_value(mrb, &stats);
         }

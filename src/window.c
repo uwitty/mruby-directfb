@@ -63,7 +63,7 @@ mrb_value mrb_directfb_window_wrap(mrb_state* mrb, struct RClass* c, IDirectFBWi
 
 IDirectFBWindow* mrb_directfb_window(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_window_data* data = (struct mrb_directfb_window_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_window_type);
+    struct mrb_directfb_window_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_window_type, struct mrb_directfb_window_data);
     if (data != NULL) {
         return data->window;
     } else {
@@ -76,7 +76,7 @@ IDirectFBWindow* mrb_directfb_window(mrb_state *mrb, mrb_value value)
 
 static mrb_value window_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_window_data* data = (struct mrb_directfb_window_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_window_type);
+    struct mrb_directfb_window_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_window_type, struct mrb_directfb_window_data);
     if ((data != NULL) && (data->window != NULL)) {
         data->window->Release(data->window);
         data->window = NULL;

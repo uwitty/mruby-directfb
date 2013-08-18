@@ -61,7 +61,7 @@ mrb_value mrb_directfb_surface_wrap(mrb_state* mrb, struct RClass* c, IDirectFBS
 
 IDirectFBSurface* mrb_directfb_surface(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_surface_type);
+    struct mrb_directfb_surface_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_surface_type, struct mrb_directfb_surface_data);
     if (data != NULL) {
         return data->surface;
     } else {
@@ -74,7 +74,7 @@ IDirectFBSurface* mrb_directfb_surface(mrb_state *mrb, mrb_value value)
 
 static mrb_value surface_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_surface_type);
+    struct mrb_directfb_surface_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_surface_type, struct mrb_directfb_surface_data);
     if ((data != NULL) && (data->surface != NULL)) {
         data->surface->Release(data->surface);
         data->surface = NULL;
@@ -139,7 +139,7 @@ static mrb_value surface_y(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_get_size(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_surface_type);
+    struct mrb_directfb_surface_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_surface_type, struct mrb_directfb_surface_data);
     if ((data != NULL) && (data->surface != NULL)) {
         mrb_value size[2];
         size[0] = mrb_fixnum_value(data->width);
@@ -151,7 +151,7 @@ static mrb_value surface_get_size(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_width(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_surface_type);
+    struct mrb_directfb_surface_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_surface_type, struct mrb_directfb_surface_data);
     if ((data != NULL) && (data->surface != NULL)) {
         return mrb_fixnum_value(data->width);
     }
@@ -160,7 +160,7 @@ static mrb_value surface_width(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_height(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_surface_data* data = (struct mrb_directfb_surface_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_surface_type);
+    struct mrb_directfb_surface_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_surface_type, struct mrb_directfb_surface_data);
     if ((data != NULL) && (data->surface != NULL)) {
         return mrb_fixnum_value(data->height);
     }

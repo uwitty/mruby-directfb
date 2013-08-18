@@ -47,9 +47,9 @@ mrb_value mrb_directfb_input_device_wrap(mrb_state* mrb, struct RClass* c, IDire
     return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_input_device_type, data));
 }
 
-IDirectFBInputDevice* mrb_directfb_input_device_get(mrb_state *mrb, mrb_value value)
+IDirectFBInputDevice* mrb_directfb_input_device(mrb_state *mrb, mrb_value value)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, value, &mrb_directfb_input_device_type);
+    struct mrb_directfb_input_device_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_input_device_type, struct mrb_directfb_input_device_data);
     if (data != NULL) {
         return data->input_device;
     } else {
@@ -62,7 +62,7 @@ IDirectFBInputDevice* mrb_directfb_input_device_get(mrb_state *mrb, mrb_value va
 
 static mrb_value input_device_release(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
+    struct mrb_directfb_input_device_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_input_device_type, struct mrb_directfb_input_device_data);
     if ((data != NULL) && (data->input_device != NULL)) {
         data->input_device->Release(data->input_device);
         data->input_device = NULL;
@@ -72,9 +72,8 @@ static mrb_value input_device_release(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_id(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         DFBInputDeviceID id;
         DFBResult ret = device->GetID(device, &id);
         if (!ret) {
@@ -86,9 +85,8 @@ static mrb_value input_device_get_id(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_description(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         DFBInputDeviceDescription desc;
         DFBResult ret = device->GetDescription(device, &desc);
         if (!ret) {
@@ -100,9 +98,8 @@ static mrb_value input_device_get_description(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_keymap_entry(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
 
         mrb_int keycode;
         mrb_get_args(mrb, "i", &keycode);
@@ -119,9 +116,8 @@ static mrb_value input_device_get_keymap_entry(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_create_event_buffer(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
 
         IDirectFBEventBuffer* event_buffer;
         DFBResult ret = device->CreateEventBuffer(device, &event_buffer);
@@ -144,9 +140,8 @@ static mrb_value input_device_detach_event_buffer(mrb_state *mrb, mrb_value self
 
 static mrb_value input_device_get_key_state(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         mrb_int key_id;
         mrb_get_args(mrb, "i", &key_id);
         DFBInputDeviceKeyState state;
@@ -160,9 +155,8 @@ static mrb_value input_device_get_key_state(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_modifiers(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         DFBInputDeviceModifierMask mask;
         DFBResult ret = device->GetModifiers(device, &mask);
         if (!ret) {
@@ -174,9 +168,8 @@ static mrb_value input_device_get_modifiers(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_lock_state(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         DFBInputDeviceLockState state;
         DFBResult ret = device->GetLockState(device, &state);
         if (!ret) {
@@ -188,9 +181,8 @@ static mrb_value input_device_get_lock_state(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_buttons(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         DFBInputDeviceButtonMask mask;
         DFBResult ret = device->GetButtons(device, &mask);
         if (!ret) {
@@ -202,9 +194,8 @@ static mrb_value input_device_get_buttons(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_button_state(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         mrb_int button;
         mrb_get_args(mrb, "i", &button);
         DFBInputDeviceButtonState state;
@@ -218,9 +209,8 @@ static mrb_value input_device_get_button_state(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_axis(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         mrb_int axis;
         mrb_get_args(mrb, "i", &axis);
         int pos;
@@ -234,9 +224,8 @@ static mrb_value input_device_get_axis(mrb_state *mrb, mrb_value self)
 
 static mrb_value input_device_get_xy(mrb_state *mrb, mrb_value self)
 {
-    struct mrb_directfb_input_device_data* data = (struct mrb_directfb_input_device_data*)mrb_data_get_ptr(mrb, self, &mrb_directfb_input_device_type);
-    if ((data != NULL) && (data->input_device != NULL)) {
-        IDirectFBInputDevice* device = data->input_device;
+    IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
+    if (device != NULL) {
         int x, y;
         DFBResult ret = device->GetXY(device, &x, &y);
         if (!ret) {
