@@ -22,7 +22,7 @@ DirectFB.run({width:960, height:540}) do |dfb, layer, primary|
 
   primary.set_blitting_flags(DSBLIT_BLEND_ALPHACHANNEL)
   primary.set_porter_duff(DSPD_SRC_OVER)
-  ret = primary.stretch_blit(offscreen);
+  ret = primary.stretch_blit(offscreen, nil, nil);
   DirectFB.error('DirectFB::Surface#stretch_blit()', ret)
   
   primary.flip()
