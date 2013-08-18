@@ -11,6 +11,6 @@
 
 mrb_value mrb_directfb_input_device_value(mrb_state* mrb, IDirectFBInputDevice* input_device);
 mrb_value mrb_directfb_input_device_wrap(mrb_state* mrb, struct RClass* c, IDirectFBInputDevice* input_device);
-IDirectFBSurface* mrb_directfb_input_device(mrb_state *mrb, mrb_value value);
+IDirectFBInputDevice* mrb_directfb_input_device(mrb_state *mrb, mrb_value value);
 void mrb_directfb_define_input_device(mrb_state* mrb, struct RClass* outer);
 

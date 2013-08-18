@@ -26,6 +26,6 @@ mrb_value mrb_directfb_event_value(mrb_state* mrb, DFBEvent* event);
 void mrb_directfb_event(mrb_state* mrb, mrb_value event_object, DFBEvent* event);
 
 mrb_value mrb_directfb_event_buffer_stats_value(mrb_state* mrb, DFBEventBufferStats* stats);
-DFBEventBufferStats* mrb_directfb_get_event_buffer_stats(mrb_state *mrb, mrb_value value);
+DFBEventBufferStats* mrb_directfb_event_buffer_stats(mrb_state *mrb, mrb_value value);
 
 void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer);

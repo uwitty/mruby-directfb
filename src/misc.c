@@ -818,7 +818,7 @@ mrb_value mrb_directfb_event_buffer_stats_value(mrb_state* mrb, DFBEventBufferSt
     return mrb_directfb_event_buffer_stats_wrap(mrb, c, stats);
 }
 
-DFBEventBufferStats* mrb_directfb_get_event_buffer_stats(mrb_state *mrb, mrb_value value)
+DFBEventBufferStats* mrb_directfb_event_buffer_stats(mrb_state *mrb, mrb_value value)
 {
     struct mrb_directfb_event_buffer_stats_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_event_buffer_stats_type, struct mrb_directfb_event_buffer_stats_data);
     return (data != NULL)? &data->stats : NULL;
@@ -826,247 +826,247 @@ DFBEventBufferStats* mrb_directfb_get_event_buffer_stats(mrb_state *mrb, mrb_val
 
 static mrb_value event_buffer_stats_num_events(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->num_events) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_input(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DFEC_INPUT) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_window(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DFEC_WINDOW) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_user(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DFEC_USER) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_universal(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DFEC_UNIVERSAL) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_videoprovider(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DFEC_VIDEOPROVIDER) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_keypress(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DIET_KEYPRESS) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_keyrelease(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DIET_KEYRELEASE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_buttonpress(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DIET_BUTTONPRESS) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_buttonrelease(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DIET_BUTTONRELEASE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_axismotion(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DIET_AXISMOTION) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_position(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_MOTION) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_size(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_SIZE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_close(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_CLOSE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_destroyed(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_DESTROYED) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_gotfocus(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_GOTFOCUS) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_lostfocus(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_LOSTFOCUS) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_keydown(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_KEYDOWN) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_keyup(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_KEYUP) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_buttondown(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_BUTTONDOWN) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_buttonup(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_BUTTONUP) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_motion(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_MOTION) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_enter(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_ENTER) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_leave(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_LEAVE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_wheel(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_WHEEL) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_position_size(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DWET_POSITION_SIZE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_started(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_STARTED) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_stopped(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_STOPPED) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_speedchange(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_SPEEDCHANGE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_streamchange(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_STREAMCHANGE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_fatalerror(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FATALERROR) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_finished(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FINISHED) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_surfacechange(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_SURFACECHANGE) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_framedecoded(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FRAMEDECODED) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_framedisplayed(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_FRAMEDISPLAYED) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_dataexhausted(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_DATAEXHAUSTED) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_datalow(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_DATALOW) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_videoaction(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_VIDEOACTION) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_datahigh(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_DATAHIGH) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_buffertimelow(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_BUFFERTIMELOW) : mrb_nil_value();
 }
 
 static mrb_value event_buffer_stats_buffertimehigh(mrb_state *mrb, mrb_value self)
 {
-    DFBEventBufferStats* stats = mrb_directfb_get_event_buffer_stats(mrb, self);
+    DFBEventBufferStats* stats = mrb_directfb_event_buffer_stats(mrb, self);
     return (stats != NULL)? mrb_fixnum_value(stats->DVPET_BUFFERTIMEHIGH) : mrb_nil_value();
 }
 
