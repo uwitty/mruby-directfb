@@ -272,7 +272,7 @@ void mrb_directfb_define_input_device(mrb_state* mrb, struct RClass* outer)
     mrb_define_method(mrb, input_device, "get_lock_state", input_device_get_lock_state, MRB_ARGS_NONE());
     mrb_define_method(mrb, input_device, "get_buttons", input_device_get_buttons, MRB_ARGS_NONE());
     mrb_define_method(mrb, input_device, "get_button_state", input_device_get_button_state, MRB_ARGS_REQ(1));
-    mrb_define_method(mrb, input_device, "get_axis", input_device_get_axis, MRB_ARGS_NONE());
+    mrb_define_method(mrb, input_device, "get_axis", input_device_get_axis, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, input_device, "get_xy", input_device_get_xy, MRB_ARGS_NONE());
 }
 
