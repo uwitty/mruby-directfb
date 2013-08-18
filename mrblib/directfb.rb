@@ -41,6 +41,21 @@ class DirectFB
     end
   end
 
+  def create_image_provider(filename)
+    if block_given?
+      provider = create_image_provider_impl(filename)
+      if provider
+        begin
+          yield provider
+        ensure
+          provider.release
+        end
+      end
+    else
+      create_image_provider_impl(filename)
+    end
+  end
+
   class Surface
     def lock(flags)
       if block_given?

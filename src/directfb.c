@@ -489,7 +489,7 @@ void mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_define_method(mrb, dfb, "create_input_event_buffer", directfb_create_input_event_buffer, MRB_ARGS_REQ(2));
 
     // media
-    mrb_define_method(mrb, dfb, "create_image_provider", directfb_create_image_provider, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, dfb, "create_image_provider_impl", directfb_create_image_provider, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "create_font", directfb_create_font, MRB_ARGS_REQ(2));
 
     // misc
