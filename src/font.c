@@ -311,7 +311,6 @@ static mrb_value font_find_encoding(mrb_state *mrb, mrb_value self)
             return mrb_fixnum_value(encoding_id);
         }
     }
-    printf("end:%s()\n", __func__);
     return mrb_nil_value();
 }
 
