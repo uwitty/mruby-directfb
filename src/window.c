@@ -144,16 +144,14 @@ static mrb_value window_create_event_buffer(mrb_state *mrb, mrb_value self)
 static mrb_value window_attach_event_buffer(mrb_state *mrb, mrb_value self)
 {
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
+    DFBResult ret = -1;
     if (window != NULL) {
         mrb_value buffer_object;
         mrb_get_args(mrb, "o", &buffer_object);
         IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
-        DFBResult ret = window->AttachEventBuffer(window, buffer);
-        if (!ret) {
-            return mrb_directfb_event_buffer_value(mrb, buffer);
-        }
+        ret = window->AttachEventBuffer(window, buffer);
     }
-    return mrb_nil_value();
+    return mrb_fixnum_value(ret);
 }
 
 static mrb_value window_detach_event_buffer(mrb_state *mrb, mrb_value self)
@@ -166,9 +164,6 @@ static mrb_value window_detach_event_buffer(mrb_state *mrb, mrb_value self)
         mrb_get_args(mrb, "o", &buffer_object);
         IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
         ret = window->DetachEventBuffer(window, buffer);
-        if (!ret) {
-            return mrb_directfb_event_buffer_value(mrb, buffer);
-        }
     }
     return mrb_fixnum_value(ret);
 }
