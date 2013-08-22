@@ -26,6 +26,7 @@ static void mrb_directfb_event_buffer_free(mrb_state* mrb, void* p)
         IDirectFBEventBuffer* event_buffer = (IDirectFBEventBuffer*)data->event_buffer;
         if (event_buffer != NULL) {
             event_buffer->Release(event_buffer);
+            data->event_buffer = NULL;
         }
         mrb_free(mrb, data);
     }
