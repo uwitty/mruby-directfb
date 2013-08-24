@@ -440,8 +440,6 @@ static mrb_value directfb_wait_for_sync(mrb_state *mrb, mrb_value self)
 
 void mrb_mruby_directfb_gem_init(mrb_state* mrb)
 {
-    int ai = mrb_gc_arena_save(mrb);
-
     // def DirectFB
     struct RClass* dfb = mrb_define_class(mrb, "DirectFB", mrb->object_class);
 
@@ -496,8 +494,6 @@ void mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_define_method(mrb, dfb, "resume", directfb_resume, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "wait_idle", directfb_wait_idle, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "wait_for_sync", directfb_wait_for_sync, MRB_ARGS_REQ(1));
-
-    mrb_gc_arena_restore(mrb, ai);
 }
 
 void mrb_mruby_directfb_gem_final(mrb_state* mrb)
