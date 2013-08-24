@@ -149,7 +149,7 @@ static mrb_value input_device_detach_event_buffer(mrb_state *mrb, mrb_value self
         mrb_value event_buffer_object;
         mrb_get_args(mrb, "o", &event_buffer_object);
         IDirectFBEventBuffer* event_buffer = mrb_directfb_event_buffer(mrb, event_buffer_object);
-        DFBResult ret = device->DetachEventBuffer(device, event_buffer);
+        ret = device->DetachEventBuffer(device, event_buffer);
     }
     return mrb_fixnum_value(ret);
 }
