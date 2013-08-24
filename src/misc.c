@@ -1117,6 +1117,161 @@ static void define_event_buffer_stats(mrb_state* mrb, struct RClass* outer)
 }
 
 // ============================================================================
+// IDirectFB::ColorAdjustment object - DFBColorAdjustment
+
+struct mrb_directfb_color_adjustment_data {
+    DFBColorAdjustment adjustment;
+};
+
+static void mrb_directfb_color_adjustment_free(mrb_state* mrb, void* p)
+{
+    struct mrb_directfb_color_adjustment_data* data = (struct mrb_directfb_color_adjustment_data*)p;
+    if (data != NULL) {
+        mrb_free(mrb, p);
+    }
+}
+
+static struct mrb_data_type mrb_directfb_color_adjustment_type = {"ColorAdjustment", mrb_directfb_color_adjustment_free};
+
+mrb_value mrb_directfb_color_adjustment_wrap(mrb_state* mrb, struct RClass* c, DFBColorAdjustment* adjustment)
+{
+    struct mrb_directfb_color_adjustment_data* data = (struct mrb_directfb_color_adjustment_data*)mrb_malloc(mrb, sizeof(struct mrb_directfb_color_adjustment_data));
+    if (data == NULL) {
+        return mrb_nil_value();
+    }
+    memcpy(&data->adjustment, adjustment, sizeof(data->adjustment));
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_color_adjustment_type, data));
+}
+
+mrb_value mrb_directfb_color_adjustment_value(mrb_state* mrb, DFBColorAdjustment* adjustment)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "ColorAdjustment")));
+    return mrb_directfb_color_adjustment_wrap(mrb, c, adjustment);
+}
+
+DFBColorAdjustment* mrb_directfb_color_adjustment(mrb_state *mrb, mrb_value value)
+{
+    struct mrb_directfb_color_adjustment_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_color_adjustment_type, struct mrb_directfb_color_adjustment_data);
+    return (data != NULL)? &data->adjustment : NULL;
+}
+
+static mrb_value adjustment_flags(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        return mrb_fixnum_value(adjustment->flags);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_brightness(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        return mrb_fixnum_value(adjustment->brightness);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_contrast(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        return mrb_fixnum_value(adjustment->contrast);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_hue(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        return mrb_fixnum_value(adjustment->hue);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_saturation(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        return mrb_fixnum_value(adjustment->saturation);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_flags_set(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        mrb_int flags;
+        mrb_get_args(mrb, "i", &flags);
+        adjustment->flags = flags;
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_brightness_set(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        mrb_int brightness;
+        mrb_get_args(mrb, "i", &brightness);
+        adjustment->brightness = brightness;
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_contrast_set(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        mrb_int contrast;
+        mrb_get_args(mrb, "i", &contrast);
+        adjustment->contrast = contrast;
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_hue_set(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        mrb_int hue;
+        mrb_get_args(mrb, "i", &hue);
+        adjustment->hue = hue;
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value adjustment_saturation_set(mrb_state *mrb, mrb_value self)
+{
+    DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, self);
+    if (adjustment != NULL) {
+        mrb_int saturation;
+        mrb_get_args(mrb, "i", &saturation);
+        adjustment->saturation = saturation;
+    }
+    return mrb_nil_value();
+}
+
+static void define_color_adjustment(mrb_state* mrb, struct RClass* outer)
+{
+    struct RClass* adjustment = mrb_define_class_under(mrb, outer, "ColorAdjustment", mrb->object_class);
+    mrb_define_method(mrb, adjustment, "flags", adjustment_flags, MRB_ARGS_NONE());
+    mrb_define_method(mrb, adjustment, "brightness", adjustment_brightness, MRB_ARGS_NONE());
+    mrb_define_method(mrb, adjustment, "contrast", adjustment_contrast, MRB_ARGS_NONE());
+    mrb_define_method(mrb, adjustment, "hue", adjustment_hue, MRB_ARGS_NONE());
+    mrb_define_method(mrb, adjustment, "saturation", adjustment_saturation, MRB_ARGS_NONE());
+    mrb_define_method(mrb, adjustment, "flags=", adjustment_flags_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, adjustment, "brightness=", adjustment_brightness_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, adjustment, "contrast=", adjustment_contrast_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, adjustment, "hue=", adjustment_hue_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, adjustment, "saturation=", adjustment_saturation_set, MRB_ARGS_REQ(1));
+}
+
+// ============================================================================
 
 void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
 {
@@ -1127,5 +1282,6 @@ void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
     define_window_event(mrb, outer);
     define_video_provider_event(mrb, outer);
     define_event_buffer_stats(mrb, outer);
+    define_color_adjustment(mrb, outer);
 }
 
