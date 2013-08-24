@@ -253,3 +253,47 @@ void mrb_directfb_window_description_get(mrb_state *mrb, mrb_value hash, DFBWind
     DESC_INT_VALUE_TO_CSTRUCT(mrb, hash, desc, resource_id , DWDESC_RESOURCE_ID );
 }
 
+static mrb_value stream_description_video(mrb_state* mrb, const DFBStreamDescription* desc)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "encoding")), mrb_str_new_cstr(mrb, desc->video.encoding));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "framerate")), mrb_float_value(mrb, desc->video.framerate));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "aspect")), mrb_float_value(mrb, desc->video.aspect));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "bitrate")), mrb_fixnum_value(desc->video.bitrate));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "afd")), mrb_fixnum_value(desc->video.afd));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "width")), mrb_fixnum_value(desc->video.width));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "height")), mrb_fixnum_value(desc->video.height));
+
+    return value;
+}
+
+static mrb_value stream_description_audio(mrb_state* mrb, const DFBStreamDescription* desc)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "encoding")), mrb_str_new_cstr(mrb, desc->audio.encoding));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "samplerate")), mrb_fixnum_value(desc->audio.samplerate));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "channels")), mrb_fixnum_value(desc->audio.channels));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "bitrate")), mrb_fixnum_value(desc->audio.bitrate));
+
+    return value;
+}
+
+mrb_value mrb_directfb_stream_description_new(mrb_state *mrb, const DFBStreamDescription* desc)
+{
+    mrb_value value = mrb_hash_new(mrb);
+
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")), mrb_fixnum_value(desc->caps));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "video")), stream_description_video(mrb, desc));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "audio")), stream_description_audio(mrb, desc));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "title")), mrb_str_new_cstr(mrb, desc->title));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "author")), mrb_str_new_cstr(mrb, desc->author));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "album")), mrb_str_new_cstr(mrb, desc->album));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "year")), mrb_fixnum_value(desc->year));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "genre")), mrb_str_new_cstr(mrb, desc->genre));
+    mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "comment")), mrb_str_new_cstr(mrb, desc->comment));
+
+    return value;
+}
+

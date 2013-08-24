@@ -33,3 +33,5 @@ mrb_value mrb_directfb_screen_description_new(mrb_state *mrb, const DFBScreenDes
 
 void mrb_directfb_window_description_get(mrb_state *mrb, mrb_value hash, DFBWindowDescription* desc);
 
+mrb_value mrb_directfb_stream_description_new(mrb_state *mrb, const DFBStreamDescription* desc);
+
