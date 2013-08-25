@@ -1272,6 +1272,141 @@ static void define_color_adjustment(mrb_state* mrb, struct RClass* outer)
 }
 
 // ============================================================================
+// IDirectFB::StreamAttributes object - DFBStreamAttributes
+
+struct mrb_directfb_stream_attributes_data {
+    DFBStreamAttributes attributes;
+};
+
+static void mrb_directfb_stream_attributes_free(mrb_state* mrb, void* p)
+{
+    struct mrb_directfb_stream_attributes_data* data = (struct mrb_directfb_stream_attributes_data*)p;
+    if (data != NULL) {
+        mrb_free(mrb, p);
+    }
+}
+
+static struct mrb_data_type mrb_directfb_stream_attributes_type = {"StreamAttributes", mrb_directfb_stream_attributes_free};
+
+mrb_value mrb_directfb_stream_attributes_wrap(mrb_state* mrb, struct RClass* c, DFBStreamAttributes* attributes)
+{
+    struct mrb_directfb_stream_attributes_data* data = (struct mrb_directfb_stream_attributes_data*)mrb_malloc(mrb, sizeof(struct mrb_directfb_stream_attributes_data));
+    if (data == NULL) {
+        return mrb_nil_value();
+    }
+    memcpy(&data->attributes, attributes, sizeof(data->attributes));
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_stream_attributes_type, data));
+}
+
+mrb_value mrb_directfb_stream_attributes_value(mrb_state* mrb, DFBStreamAttributes* attributes)
+{
+    struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "StreamAttributes")));
+    return mrb_directfb_stream_attributes_wrap(mrb, c, attributes);
+}
+
+DFBStreamAttributes* mrb_directfb_stream_attributes(mrb_state *mrb, mrb_value value)
+{
+    struct mrb_directfb_stream_attributes_data* data = DATA_CHECK_GET_PTR(mrb, value, &mrb_directfb_stream_attributes_type, struct mrb_directfb_stream_attributes_data);
+    return (data != NULL)? &data->attributes : NULL;
+}
+
+static mrb_value stream_attributes_video_encoding(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        return mrb_str_new_cstr(mrb, attributes->video.encoding);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value stream_attributes_video_format(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        return mrb_fixnum_value(attributes->video.format);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value stream_attributes_audio_encoding(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        return mrb_str_new_cstr(mrb, attributes->audio.encoding);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value stream_attributes_audio_format(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        return mrb_fixnum_value(attributes->audio.format);
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value stream_attributes_video_encoding_set(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        char* encoding = NULL;
+        mrb_get_args(mrb, "z", encoding);
+        strncpy(attributes->video.encoding, encoding, DFB_STREAM_DESC_ENCODING_LENGTH);
+        attributes->video.encoding[DFB_STREAM_DESC_ENCODING_LENGTH - 1] = '\0';
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value stream_attributes_video_format_set(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        mrb_int format = 0;
+        mrb_get_args(mrb, "i", &format);
+        attributes->video.format = format;
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value stream_attributes_audio_encoding_set(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        char* encoding = NULL;
+        mrb_get_args(mrb, "z", encoding);
+        strncpy(attributes->audio.encoding, encoding, DFB_STREAM_DESC_ENCODING_LENGTH);
+        attributes->audio.encoding[DFB_STREAM_DESC_ENCODING_LENGTH - 1] = '\0';
+    }
+    return mrb_nil_value();
+}
+
+static mrb_value stream_attributes_audio_format_set(mrb_state *mrb, mrb_value self)
+{
+    DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, self);
+    if (attributes != NULL) {
+        mrb_int format = 0;
+        mrb_get_args(mrb, "i", &format);
+        attributes->audio.format = format;
+    }
+    return mrb_nil_value();
+}
+
+static void define_stream_attributes(mrb_state* mrb, struct RClass* outer)
+{
+    struct RClass* attributes = mrb_define_class_under(mrb, outer, "StreamAttributes", mrb->object_class);
+    mrb_define_method(mrb, attributes, "video_encoding", stream_attributes_video_encoding, MRB_ARGS_NONE());
+    mrb_define_method(mrb, attributes, "video_format", stream_attributes_video_format, MRB_ARGS_NONE());
+    mrb_define_method(mrb, attributes, "audio_encoding", stream_attributes_audio_encoding, MRB_ARGS_NONE());
+    mrb_define_method(mrb, attributes, "audio_format", stream_attributes_audio_format, MRB_ARGS_NONE());
+    mrb_define_method(mrb, attributes, "video_encoding=", stream_attributes_video_encoding_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, attributes, "video_format=", stream_attributes_video_format_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, attributes, "audio_encoding=", stream_attributes_audio_encoding_set, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, attributes, "audio_format=", stream_attributes_audio_format_set, MRB_ARGS_REQ(1));
+}
+
+// ============================================================================
 
 void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
 {
@@ -1283,5 +1418,6 @@ void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer)
     define_video_provider_event(mrb, outer);
     define_event_buffer_stats(mrb, outer);
     define_color_adjustment(mrb, outer);
+    define_stream_attributes(mrb, outer);
 }
 

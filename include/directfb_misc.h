@@ -31,4 +31,7 @@ DFBEventBufferStats* mrb_directfb_event_buffer_stats(mrb_state *mrb, mrb_value v
 mrb_value mrb_directfb_color_adjustment_value(mrb_state* mrb, DFBColorAdjustment* stats);
 DFBColorAdjustment* mrb_directfb_color_adjustment(mrb_state *mrb, mrb_value value);
 
+mrb_value mrb_directfb_stream_attributes_value(mrb_state* mrb, DFBStreamAttributes* attributes);
+DFBStreamAttributes* mrb_directfb_stream_attributes(mrb_state *mrb, mrb_value value);
+
 void mrb_directfb_define_misc(mrb_state* mrb, struct RClass* outer);
