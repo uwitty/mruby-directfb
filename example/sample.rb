@@ -180,7 +180,7 @@ class App
         src_aspect = src.width / src.height
 
         if src_aspect > aspect
-          height = (dst.width * src_aspect).round
+          height = (dst.width / src_aspect).round
           y = ((dst.height - height)/2).round
           DirectFB::Rectangle.new(0, y, dst.width, height)
         else
