@@ -19,8 +19,8 @@
 // DirectFB::VideoProvider DATA
 
 struct mrb_directfb_video_provider_play_to_callback_arg {
-    mrb_state* mrb;
-    mrb_value  self;
+	IDirectFBSurface* surface;
+	DFBRegion region;
 };
 
 struct mrb_directfb_video_provider_data {
@@ -76,27 +76,26 @@ void play_to_callback(void *ctx)
         return ;
     }
 
-    mrb_state* mrb = arg->mrb;
-    mrb_value block = mrb_iv_get(mrb, arg->self, mrb_intern_cstr(mrb, "play_to_callback"));
-    if (!mrb_nil_p(block)) {
-        mrb_yield_argv(mrb, block, 0, NULL);
-    }
+    IDirectFBSurface* surface = arg->surface;
+    surface->Flip(surface, &arg->region, 0);
 }
 
-static void free_play_to_callback(struct mrb_directfb_video_provider_data* data)
+static void free_play_to_callback(mrb_state* mrb, struct mrb_directfb_video_provider_data* data)
 {
     if (data->play_to_callback_arg != NULL) {
-        mrb_free(data->play_to_callback_arg->mrb, data->play_to_callback_arg);
-        data->play_to_callback_arg = NULL;
+        mrb_free(mrb, data->play_to_callback_arg);
     }
 }
 
-static struct mrb_directfb_video_provider_play_to_callback_arg* alloc_play_to_callback_arg(mrb_state *mrb, mrb_value self, mrb_value block)
+static struct mrb_directfb_video_provider_play_to_callback_arg* alloc_play_to_callback_arg(mrb_state* mrb, IDirectFBSurface* surface, const DFBRectangle* rect)
 {
     struct mrb_directfb_video_provider_play_to_callback_arg* arg = mrb_malloc(mrb, sizeof(struct mrb_directfb_video_provider_play_to_callback_arg));
     if (arg != NULL) {
-        arg->mrb  = mrb;
-        arg->self = self;
+        arg->surface = surface;
+        arg->region.x1 = rect->x;
+        arg->region.y1 = rect->y;
+        arg->region.x2 = rect->x + rect->w;
+        arg->region.y2 = rect->y + rect->h;
 
         return arg;
     } else {
@@ -172,19 +171,17 @@ static mrb_value video_provider_play_to(mrb_state *mrb, mrb_value self)
         DFBRectangle* rect = mrb_directfb_rectangle(mrb, rect_object);
 
         DVFrameCallback callback = play_to_callback;
-        void* callback_arg = (void*)alloc_play_to_callback_arg(mrb, self, block);
+        void* callback_arg = (void*)alloc_play_to_callback_arg(mrb, surface, rect);
         if (callback_arg == NULL) {
             return mrb_fixnum_value(ret);
         }
 
         ret = provider->PlayTo(provider, surface, rect, callback, callback_arg);
         if (!ret) {
-            free_play_to_callback(data);
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "play_to_callback"), block);
+            free_play_to_callback(mrb, data);
             data->play_to_callback_arg = callback_arg;
         } else {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "play_to_callback"), mrb_nil_value());
-            free_play_to_callback(data);
+            free_play_to_callback(mrb, data);
             mrb_free(mrb, callback_arg);
         }
     }
@@ -201,7 +198,7 @@ static mrb_value video_provider_stop(mrb_state *mrb, mrb_value self)
         DFBResult ret = provider->Stop(provider);
         if (!ret) {
             mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "play_to_callback"), mrb_nil_value());
-            free_play_to_callback(data);
+            free_play_to_callback(mrb, data);
         }
     }
     return mrb_fixnum_value(ret);
