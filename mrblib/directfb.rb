@@ -58,6 +58,21 @@ class DirectFB
     end
   end
 
+  def create_video_provider(filename, &block)
+    if block
+      provider = create_video_provider_impl(filename)
+      if provider
+        begin
+          block.call(provider)
+        ensure
+          provider.release
+        end
+      end
+    else
+      create_video_provider_impl(filename)
+    end
+  end
+
   def get_input_device(device_id, &block)
     if block
       device = get_input_device_impl(device_id)
