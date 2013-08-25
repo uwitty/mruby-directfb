@@ -3,10 +3,11 @@ include DirectFB::Constants
 FONT_FILENAME = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"
 
 class App
-  def initialize(dfb, layer, filename)
+  def initialize(dfb, layer, filenames)
     @dfb = dfb
     @layer = layer
-    @filename = filename
+    @filenames = filenames
+    @idx = 0
 
     @video = VideoWindow.new(dfb, layer)
     @desc  = DescWindow.new(dfb, layer)
@@ -16,7 +17,7 @@ class App
     end
 
     @provider = nil
-    load_video(@filename)
+    load_video(@filenames[@idx])
 
     @video.window.set_opacity(255)
     @desc.window.set_opacity(255)
@@ -25,16 +26,32 @@ class App
   def update
     ret = @event_buffer.wait_for_event_with_timeout(3, 0)
 
+    updated = false
     case ret
     when DFB_OK
       event = @event_buffer.get_event
       return false unless event
       return false if (event.type == DIET_KEYPRESS) && (event.key_id == DIKI_ESCAPE)
+
+      if (event.type == DIET_KEYRELEASE) && (event.key_id == DIKI_RIGHT)
+        @idx = (@idx + 1) % @filenames.length
+        updated = true
+      end
+      if (event.type == DIET_KEYRELEASE) && (event.key_id == DIKI_LEFT)
+        @idx = (@idx - 1) % @filenames.length
+        updated = true
+      end
     when DFB_TIMEOUT
     else
       return false
     end
+    if updated
+      @desc.clear
+      @video.clear
 
+      load_video(@filenames[@idx])
+      @video.surface.flip
+    end
     true
   end
 
@@ -43,7 +60,7 @@ class App
     @desc.clear
 
     @video.start(filename)
-    @desc.update(App.basename(filename), 0, 0)
+    @desc.update(App.basename(filename), @video.width, @video.height)
   end
 
   def release
@@ -161,6 +178,7 @@ class App
     end
 
     def start(filename)
+      @provider.release if @provider
       @provider = @dfb.create_video_provider(filename)
       ret = @provider.set_playback_flags(DVPLAY_LOOPING)
 
@@ -169,12 +187,22 @@ class App
       @provider.play_to(surface, rect)
     end
 
+    def width
+      desc = @provider.get_surface_description
+      desc[:width]
+    end
+
+    def height
+      desc = @provider.get_surface_description
+      desc[:height]
+    end
+
     def self.calc_dst_rect(src, dst)
         aspect = dst.width / dst.height
         src_aspect = src[:width] / src[:height]
 
         if src_aspect > aspect
-          height = (dst.width * src_aspect).round
+          height = (dst.width / src_aspect).round
           y = ((dst.height - height)/2).round
           DirectFB::Rectangle.new(0, y, dst.width, height)
         else
@@ -187,7 +215,7 @@ class App
 end
 
 DirectFB.run2({width:960, height:540}) do |dfb, layer|
-  app = App.new(dfb, layer, ARGV.shift)
+  app = App.new(dfb, layer, ARGV)
   begin
     while app.update
       #DirectFB.usleep(100*1000)
