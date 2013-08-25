@@ -19,6 +19,7 @@
 #include "directfb_image_provider.h"
 #include "directfb_input_device.h"
 #include "directfb_event_buffer.h"
+#include "directfb_video_provider.h"
 
 // ============================================================================
 // IDirectFB object
@@ -377,6 +378,22 @@ static mrb_value directfb_create_image_provider(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
 }
 
+static mrb_value directfb_create_video_provider(mrb_state *mrb, mrb_value self)
+{
+    IDirectFB* dfb = get_directfb(mrb, self);
+    if (dfb != NULL) {
+        char* filename;
+        mrb_get_args(mrb, "z", &filename);
+
+        IDirectFBVideoProvider* provider;
+        DFBResult ret = dfb->CreateVideoProvider(dfb, filename, &provider);
+        if (!ret) {
+            return mrb_directfb_video_provider_value(mrb, provider);
+        }
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value directfb_create_font(mrb_state *mrb, mrb_value self)
 {
     char* fontname;
@@ -452,6 +469,7 @@ void mrb_mruby_directfb_gem_init(mrb_state* mrb)
     mrb_directfb_define_image_provider(mrb, dfb);
     mrb_directfb_define_input_device(mrb, dfb);
     mrb_directfb_define_event_buffer(mrb, dfb);
+    mrb_directfb_define_video_provider(mrb, dfb);
 
     mrb_define_class_method(mrb, dfb, "init", directfb_init, MRB_ARGS_NONE());
     mrb_define_class_method(mrb, dfb, "error", directfb_error, MRB_ARGS_REQ(2));
@@ -487,6 +505,7 @@ void mrb_mruby_directfb_gem_init(mrb_state* mrb)
 
     // media
     mrb_define_method(mrb, dfb, "create_image_provider_impl", directfb_create_image_provider, MRB_ARGS_REQ(1));
+    mrb_define_method(mrb, dfb, "create_video_provider_impl", directfb_create_video_provider, MRB_ARGS_REQ(1));
     mrb_define_method(mrb, dfb, "create_font", directfb_create_font, MRB_ARGS_REQ(2));
 
     // misc
