@@ -46,7 +46,7 @@ mrb_value mrb_directfb_region_wrap(mrb_state* mrb, struct RClass* c, int x1, int
 mrb_value mrb_directfb_region_value(mrb_state* mrb, int x1, int y1, int x2, int y2)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Region")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "Region")));
     return mrb_directfb_region_wrap(mrb, c, x1, y1, x2, y2);
 }
 
@@ -135,7 +135,7 @@ mrb_value mrb_directfb_rectangle_wrap(mrb_state* mrb, struct RClass* c, int x, i
 mrb_value mrb_directfb_rectangle_value(mrb_state* mrb, int x, int y, int w, int h)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Rectangle")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "Rectangle")));
     return mrb_directfb_rectangle_wrap(mrb, c, x, y, w, h);
 }
 
@@ -264,7 +264,7 @@ mrb_value mrb_directfb_input_device_keymap_entry_wrap(mrb_state* mrb, struct RCl
 mrb_value mrb_directfb_input_device_keymap_entry_value(mrb_state* mrb, DFBInputDeviceKeymapEntry* entry)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputDeviceKeymapEntry")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "InputDeviceKeymapEntry")));
     return mrb_directfb_input_device_keymap_entry_wrap(mrb, c, entry);
 }
 
@@ -345,7 +345,7 @@ mrb_value mrb_directfb_input_event_wrap(mrb_state* mrb, struct RClass* c, DFBInp
 mrb_value mrb_directfb_input_event_value(mrb_state* mrb, DFBInputEvent* input_event)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputEvent")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "InputEvent")));
     return mrb_directfb_input_event_wrap(mrb, c, input_event);
 }
 
@@ -383,8 +383,8 @@ static mrb_value input_event_timestamp(mrb_state *mrb, mrb_value self)
 {
     mrb_value hash = mrb_hash_new(mrb);
     DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
-    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_sec")), mrb_fixnum_value(input_event->timestamp.tv_sec));
-    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_usec")), mrb_fixnum_value(input_event->timestamp.tv_usec));
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_lit(mrb, "tv_sec")), mrb_fixnum_value(input_event->timestamp.tv_sec));
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_lit(mrb, "tv_usec")), mrb_fixnum_value(input_event->timestamp.tv_usec));
     return hash;
 }
 
@@ -512,7 +512,7 @@ mrb_value mrb_directfb_window_event_wrap(mrb_state* mrb, struct RClass* c, DFBWi
 mrb_value mrb_directfb_window_event_value(mrb_state* mrb, DFBWindowEvent* window_event)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "WindowEvent")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "WindowEvent")));
     return mrb_directfb_window_event_wrap(mrb, c, window_event);
 }
 
@@ -634,8 +634,8 @@ static mrb_value window_event_timestamp(mrb_state *mrb, mrb_value self)
 {
     mrb_value hash = mrb_hash_new(mrb);
     DFBInputEvent* input_event = mrb_directfb_input_event(mrb, self);
-    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_sec")), mrb_fixnum_value(input_event->timestamp.tv_sec));
-    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "tv_usec")), mrb_fixnum_value(input_event->timestamp.tv_usec));
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_lit(mrb, "tv_sec")), mrb_fixnum_value(input_event->timestamp.tv_sec));
+    mrb_hash_set(mrb, hash, mrb_symbol_value(mrb_intern_lit(mrb, "tv_usec")), mrb_fixnum_value(input_event->timestamp.tv_usec));
     return hash;
 }
 
@@ -693,7 +693,7 @@ mrb_value mrb_directfb_video_provider_event_wrap(mrb_state* mrb, struct RClass* 
 mrb_value mrb_directfb_video_provider_event_value(mrb_state* mrb, DFBVideoProviderEvent* video_provider_event)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "VideoProviderEvent")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "VideoProviderEvent")));
     return mrb_directfb_video_provider_event_wrap(mrb, c, video_provider_event);
 }
 
@@ -814,7 +814,7 @@ mrb_value mrb_directfb_event_buffer_stats_wrap(mrb_state* mrb, struct RClass* c,
 mrb_value mrb_directfb_event_buffer_stats_value(mrb_state* mrb, DFBEventBufferStats* stats)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "EventBufferStats")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "EventBufferStats")));
     return mrb_directfb_event_buffer_stats_wrap(mrb, c, stats);
 }
 
@@ -1146,7 +1146,7 @@ mrb_value mrb_directfb_color_adjustment_wrap(mrb_state* mrb, struct RClass* c, D
 mrb_value mrb_directfb_color_adjustment_value(mrb_state* mrb, DFBColorAdjustment* adjustment)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "ColorAdjustment")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "ColorAdjustment")));
     return mrb_directfb_color_adjustment_wrap(mrb, c, adjustment);
 }
 
@@ -1301,7 +1301,7 @@ mrb_value mrb_directfb_stream_attributes_wrap(mrb_state* mrb, struct RClass* c, 
 mrb_value mrb_directfb_stream_attributes_value(mrb_state* mrb, DFBStreamAttributes* attributes)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "StreamAttributes")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "StreamAttributes")));
     return mrb_directfb_stream_attributes_wrap(mrb, c, attributes);
 }
 

@@ -39,7 +39,7 @@ static struct mrb_data_type mrb_directfb_surface_type = {"Surface", mrb_directfb
 mrb_value mrb_directfb_surface_value(mrb_state* mrb, IDirectFBSurface* surface)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Surface")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "Surface")));
     return mrb_directfb_surface_wrap(mrb, c, surface);
 }
 
@@ -55,7 +55,7 @@ mrb_value mrb_directfb_surface_wrap(mrb_state* mrb, struct RClass* c, IDirectFBS
     data->height = height;
 
     mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_surface_type, data));
-    mrb_iv_set(mrb, obj, mrb_intern_cstr(mrb, "font"), mrb_nil_value());
+    mrb_iv_set(mrb, obj, mrb_intern_lit(mrb, "font"), mrb_nil_value());
     return obj;
 }
 
@@ -438,7 +438,7 @@ static mrb_value surface_set_font(mrb_state *mrb, mrb_value self)
         IDirectFBFont* font = mrb_directfb_font(mrb, font_object);
         ret = surface->SetFont(surface, font);
         if (!ret) {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "font"), font_object);
+            mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "font"), font_object);
         }
     }
     return mrb_fixnum_value(ret);
@@ -446,7 +446,7 @@ static mrb_value surface_set_font(mrb_state *mrb, mrb_value self)
 
 static mrb_value surface_get_font(mrb_state *mrb, mrb_value self)
 {
-    return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "font"));
+    return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "font"));
 }
 
 static mrb_value surface_draw_string(mrb_state *mrb, mrb_value self)

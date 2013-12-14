@@ -36,7 +36,7 @@ static struct mrb_data_type mrb_directfb_input_device_type = {"InputDevice", mrb
 mrb_value mrb_directfb_input_device_value(mrb_state* mrb, IDirectFBInputDevice* input_device)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "InputDevice")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "InputDevice")));
     return mrb_directfb_input_device_wrap(mrb, c, input_device);
 }
 

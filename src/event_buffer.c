@@ -44,7 +44,7 @@ mrb_value mrb_directfb_event_buffer_wrap(mrb_state* mrb, struct RClass* c, IDire
 mrb_value mrb_directfb_event_buffer_value(mrb_state* mrb, IDirectFBEventBuffer* event_buffer)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "EventBuffer")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "EventBuffer")));
     return mrb_directfb_event_buffer_wrap(mrb, c, event_buffer);
 }
 

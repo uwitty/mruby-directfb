@@ -41,7 +41,7 @@ static struct mrb_data_type mrb_directfb_window_type = {"Window", mrb_directfb_w
 mrb_value mrb_directfb_window_value(mrb_state* mrb, IDirectFBWindow* window)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Window")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "Window")));
     return mrb_directfb_window_wrap(mrb, c, window);
 }
 
@@ -305,7 +305,7 @@ static mrb_value window_set_cursor_shape(mrb_state *mrb, mrb_value self)
         IDirectFBSurface* surface = mrb_directfb_surface(mrb, surface_object);
         ret = window->SetCursorShape(window, surface, hot_x, hot_y);
         if (!ret) {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "cursor_shape"), surface_object);
+            mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "cursor_shape"), surface_object);
         }
     }
     return mrb_fixnum_value(ret);
@@ -559,7 +559,7 @@ static mrb_value window_bind(mrb_state *mrb, mrb_value self)
         IDirectFBWindow* w = mrb_directfb_window(mrb, window_object);
         ret = window->Bind(window, w, x, y);
         if (!ret) {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "bound_window"), window_object);
+            mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "bound_window"), window_object);
         }
     }
     return mrb_fixnum_value(ret);
@@ -575,7 +575,7 @@ static mrb_value window_unbind(mrb_state *mrb, mrb_value self)
         IDirectFBWindow* w = mrb_directfb_window(mrb, window_object);
         ret = window->Unbind(window, w);
         if (!ret) {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "bound_window"), mrb_nil_value());
+            mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "bound_window"), mrb_nil_value());
         }
     }
     return mrb_fixnum_value(ret);

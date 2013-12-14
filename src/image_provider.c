@@ -39,7 +39,7 @@ static struct mrb_data_type mrb_directfb_image_provider_type = {"ImageProvider",
 mrb_value mrb_directfb_image_provider_value(mrb_state* mrb, IDirectFBImageProvider* image_provider)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "ImageProvider")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "ImageProvider")));
     return mrb_directfb_image_provider_wrap(mrb, c, image_provider);
 }
 
@@ -68,7 +68,7 @@ static struct mrb_directfb_image_provider_data* setup_render_callback(mrb_state 
     if (data != NULL) {
         data->context.mrb = mrb;
         data->context.self = self;
-        mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "internal_context_callback"), block);
+        mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "internal_context_callback"), block);
     }
     return data;
 }
@@ -139,7 +139,7 @@ static DIRenderCallbackResult render_callback(DFBRectangle* rect, void* callback
     struct mrb_directfb_image_provider_data* data = (struct mrb_directfb_image_provider_data*)callbackdata;
     if (data != NULL) {
         mrb_state* mrb = data->context.mrb;
-        mrb_value block = mrb_iv_get(mrb, data->context.self, mrb_intern_cstr(mrb, "internal_context_callback"));
+        mrb_value block = mrb_iv_get(mrb, data->context.self, mrb_intern_lit(mrb, "internal_context_callback"));
         if (!mrb_nil_p(block)) {
             int ai = mrb_gc_arena_save(mrb);
             mrb_value rect_object = mrb_directfb_rectangle_value(mrb, rect->x, rect->y, rect->w, rect->h);

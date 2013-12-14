@@ -47,7 +47,7 @@ mrb_value mrb_directfb_display_layer_wrap(mrb_state* mrb, struct RClass* c, IDir
 mrb_value mrb_directfb_display_layer_value(mrb_state* mrb, IDirectFBDisplayLayer* layer)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "DisplayLayer")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "DisplayLayer")));
     return mrb_directfb_display_layer_wrap(mrb, c, layer);
 }
 

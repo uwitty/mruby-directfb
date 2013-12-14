@@ -47,7 +47,7 @@ mrb_value mrb_directfb_font_wrap(mrb_state* mrb, struct RClass* c, IDirectFBFont
 mrb_value mrb_directfb_font_value(mrb_state* mrb, IDirectFBFont* font)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "Font")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "Font")));
     return mrb_directfb_font_wrap(mrb, c, font);
 }
 

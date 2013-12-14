@@ -45,7 +45,7 @@ static struct mrb_data_type mrb_directfb_video_provider_type = {"VideoProvider",
 mrb_value mrb_directfb_video_provider_value(mrb_state* mrb, IDirectFBVideoProvider* video_provider)
 {
     struct RClass* class_directfb = mrb_class_get(mrb, "DirectFB");
-    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern(mrb, "VideoProvider")));
+    struct RClass* c = mrb_class_ptr(mrb_const_get(mrb, mrb_obj_value(class_directfb), mrb_intern_lit(mrb, "VideoProvider")));
     return mrb_directfb_video_provider_wrap(mrb, c, video_provider);
 }
 
@@ -197,7 +197,7 @@ static mrb_value video_provider_stop(mrb_state *mrb, mrb_value self)
     if (provider != NULL) {
         DFBResult ret = provider->Stop(provider);
         if (!ret) {
-            mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "play_to_callback"), mrb_nil_value());
+            mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "play_to_callback"), mrb_nil_value());
             free_play_to_callback(mrb, data);
         }
     }
