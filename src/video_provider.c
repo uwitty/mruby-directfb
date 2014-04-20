@@ -55,8 +55,7 @@ mrb_value mrb_directfb_video_provider_wrap(mrb_state* mrb, struct RClass* c, IDi
     data->video_provider = video_provider;
     data->play_to_callback_arg = NULL;
 
-    mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_video_provider_type, data));
-    return obj;
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_video_provider_type, data));
 }
 
 IDirectFBVideoProvider* mrb_directfb_video_provider(mrb_state *mrb, mrb_value value)
@@ -76,8 +75,7 @@ void play_to_callback(void *ctx)
         return ;
     }
 
-    IDirectFBSurface* surface = arg->surface;
-    surface->Flip(surface, &arg->region, 0);
+    arg->surface->Flip(arg->surface, &arg->region, 0);
 }
 
 static void free_play_to_callback(mrb_state* mrb, struct mrb_directfb_video_provider_data* data)
@@ -162,16 +160,21 @@ static mrb_value video_provider_play_to(mrb_state *mrb, mrb_value self)
 
     DFBResult ret = -1;
     if (provider != NULL) {
+        IDirectFBSurface* surface = NULL;
+        DFBRectangle* rect = NULL;
+        DVFrameCallback callback = NULL;
+        void* callback_arg = NULL;
+
         mrb_value surface_object = mrb_nil_value();
         mrb_value rect_object= mrb_nil_value();
         mrb_value block = mrb_nil_value();
         mrb_get_args(mrb, "oo|&", &surface_object, &rect_object, &block);
 
-        IDirectFBSurface* surface = mrb_directfb_surface(mrb, surface_object);
-        DFBRectangle* rect = mrb_directfb_rectangle(mrb, rect_object);
+        surface = mrb_directfb_surface(mrb, surface_object);
+        rect = mrb_directfb_rectangle(mrb, rect_object);
 
-        DVFrameCallback callback = play_to_callback;
-        void* callback_arg = (void*)alloc_play_to_callback_arg(mrb, surface, rect);
+        callback = play_to_callback;
+        callback_arg = (void*)alloc_play_to_callback_arg(mrb, surface, rect);
         if (callback_arg == NULL) {
             return mrb_fixnum_value(ret);
         }
@@ -273,9 +276,10 @@ static mrb_value video_provider_set_color_adjustment(mrb_state *mrb, mrb_value s
     IDirectFBVideoProvider* provider = mrb_directfb_video_provider(mrb, self);
     DFBResult ret = -1;
     if (provider != NULL) {
+        DFBColorAdjustment* adjustment = NULL;
         mrb_value adjustment_object = mrb_nil_value();
         mrb_get_args(mrb, "o", &adjustment_object);
-        DFBColorAdjustment* adjustment = mrb_directfb_color_adjustment(mrb, adjustment_object);
+        adjustment = mrb_directfb_color_adjustment(mrb, adjustment_object);
         ret = provider->SetColorAdjustment(provider, adjustment);
     }
     return mrb_fixnum_value(ret);
@@ -286,9 +290,9 @@ static mrb_value video_provider_send_event(mrb_state *mrb, mrb_value self)
     IDirectFBVideoProvider* provider = mrb_directfb_video_provider(mrb, self);
     DFBResult ret = -1;
     if (provider != NULL) {
+        DFBEvent event;
         mrb_value event_object = mrb_nil_value();
         mrb_get_args(mrb, "o", &event_object);
-        DFBEvent event;
         mrb_directfb_event(mrb, event_object, &event);
         ret = provider->SendEvent(provider, &event);
     }
@@ -362,9 +366,10 @@ static mrb_value video_provider_set_stream_attributes(mrb_state *mrb, mrb_value 
     IDirectFBVideoProvider* provider = mrb_directfb_video_provider(mrb, self);
     DFBResult ret = -1;
     if (provider != NULL) {
+        DFBStreamAttributes* attributes;
         mrb_value attributes_object;
         mrb_get_args(mrb, "o", &attributes_object);
-        DFBStreamAttributes* attributes = mrb_directfb_stream_attributes(mrb, attributes_object);
+        attributes = mrb_directfb_stream_attributes(mrb, attributes_object);
         ret = provider->SetStreamAttributes(provider, *attributes);
     }
     return mrb_fixnum_value(ret);
@@ -375,9 +380,10 @@ static mrb_value video_provider_set_audio_outputs(mrb_state *mrb, mrb_value self
     IDirectFBVideoProvider* provider = mrb_directfb_video_provider(mrb, self);
     DFBResult ret = -1;
     if (provider != NULL) {
+        DFBVideoProviderAudioUnits units;
         mrb_int outputs;
         mrb_get_args(mrb, "i", &outputs);
-        DFBVideoProviderAudioUnits units = outputs;
+        units = outputs;
         ret = provider->SetAudioOutputs(provider, &units);
     }
     return mrb_fixnum_value(ret);
@@ -451,9 +457,10 @@ static mrb_value video_provider_attach_event_buffer(mrb_state *mrb, mrb_value se
     IDirectFBVideoProvider* video_provider = mrb_directfb_video_provider(mrb, self);
     DFBResult ret = -1;
     if (video_provider != NULL) {
+        IDirectFBEventBuffer* buffer = NULL;
         mrb_value buffer_object;
         mrb_get_args(mrb, "o", &buffer_object);
-        IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
+        buffer = mrb_directfb_event_buffer(mrb, buffer_object);
         ret = video_provider->AttachEventBuffer(video_provider, buffer);
     }
     return mrb_fixnum_value(ret);
@@ -465,9 +472,10 @@ static mrb_value video_provider_detach_event_buffer(mrb_state *mrb, mrb_value se
 
     DFBResult ret = -1;
     if (video_provider != NULL) {
+        IDirectFBEventBuffer* buffer = NULL;
         mrb_value buffer_object;
         mrb_get_args(mrb, "o", &buffer_object);
-        IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
+        buffer = mrb_directfb_event_buffer(mrb, buffer_object);
         ret = video_provider->DetachEventBuffer(video_provider, buffer);
     }
     return mrb_fixnum_value(ret);

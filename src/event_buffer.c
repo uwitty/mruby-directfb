@@ -144,12 +144,11 @@ static mrb_value event_buffer_post_event(mrb_state* mrb, mrb_value self)
 {
     IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
     if (buffer != NULL) {
+        DFBEvent event;
         mrb_value event_object;
         mrb_get_args(mrb, "o", &event_object);
-        DFBEvent event;
         mrb_directfb_event(mrb, event_object, &event);
-        DFBResult ret = buffer->PostEvent(buffer, &event);
-        return mrb_fixnum_value(ret);
+        return mrb_fixnum_value(buffer->PostEvent(buffer, &event));
     }
     return mrb_nil_value();
 }
@@ -158,8 +157,7 @@ static mrb_value event_buffer_wake_up(mrb_state* mrb, mrb_value self)
 {
     IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
     if (buffer != NULL) {
-        DFBResult ret = buffer->WakeUp(buffer);
-        return mrb_fixnum_value(ret);
+        return mrb_fixnum_value(buffer->WakeUp(buffer));
     }
 
     return mrb_nil_value();
@@ -176,11 +174,11 @@ static mrb_value event_buffer_enable_statistics(mrb_state* mrb, mrb_value self)
 {
     IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, self);
     if (buffer != NULL) {
+        DFBBoolean enable;
         mrb_bool b;
         mrb_get_args(mrb, "b", &b);
-        DFBBoolean enable = (b != FALSE)? DFB_TRUE : DFB_FALSE;
-        DFBResult ret = buffer->EnableStatistics(buffer, enable);
-        return mrb_fixnum_value(ret);
+        enable = (b != FALSE)? DFB_TRUE : DFB_FALSE;
+        return mrb_fixnum_value(buffer->EnableStatistics(buffer, enable));
     }
 
     return mrb_nil_value();

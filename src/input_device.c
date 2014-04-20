@@ -100,13 +100,14 @@ static mrb_value input_device_get_keymap_entry(mrb_state *mrb, mrb_value self)
 {
     IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
     if (device != NULL) {
+        DFBInputDeviceKeymapEntry entry;
+        DFBResult ret;
 
         mrb_int keycode;
         mrb_get_args(mrb, "i", &keycode);
 
-        DFBInputDeviceKeymapEntry entry;
 
-        DFBResult ret = device->GetKeymapEntry(device, keycode, &entry);
+        ret = device->GetKeymapEntry(device, keycode, &entry);
         if (!ret) {
             return mrb_directfb_input_device_keymap_entry_value(mrb, &entry);
         }
@@ -133,9 +134,10 @@ static mrb_value input_device_attach_event_buffer(mrb_state *mrb, mrb_value self
     DFBResult ret = -1;
     IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
     if (device != NULL) {
+        IDirectFBEventBuffer* event_buffer = NULL;
         mrb_value event_buffer_object;
         mrb_get_args(mrb, "o", &event_buffer_object);
-        IDirectFBEventBuffer* event_buffer = mrb_directfb_event_buffer(mrb, event_buffer_object);
+        event_buffer = mrb_directfb_event_buffer(mrb, event_buffer_object);
         ret = device->AttachEventBuffer(device, event_buffer);
     }
     return mrb_fixnum_value(ret);
@@ -146,9 +148,10 @@ static mrb_value input_device_detach_event_buffer(mrb_state *mrb, mrb_value self
     DFBResult ret = -1;
     IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
     if (device != NULL) {
+        IDirectFBEventBuffer* event_buffer = NULL;
         mrb_value event_buffer_object;
         mrb_get_args(mrb, "o", &event_buffer_object);
-        IDirectFBEventBuffer* event_buffer = mrb_directfb_event_buffer(mrb, event_buffer_object);
+        event_buffer = mrb_directfb_event_buffer(mrb, event_buffer_object);
         ret = device->DetachEventBuffer(device, event_buffer);
     }
     return mrb_fixnum_value(ret);
@@ -158,10 +161,11 @@ static mrb_value input_device_get_key_state(mrb_state *mrb, mrb_value self)
 {
     IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
     if (device != NULL) {
+        DFBResult ret;
+        DFBInputDeviceKeyState state;
         mrb_int key_id;
         mrb_get_args(mrb, "i", &key_id);
-        DFBInputDeviceKeyState state;
-        DFBResult ret = device->GetKeyState(device, key_id, &state);
+        ret = device->GetKeyState(device, key_id, &state);
         if (!ret) {
             return mrb_fixnum_value(state);
         }
@@ -212,10 +216,11 @@ static mrb_value input_device_get_button_state(mrb_state *mrb, mrb_value self)
 {
     IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
     if (device != NULL) {
+        DFBResult ret;
+        DFBInputDeviceButtonState state;
         mrb_int button;
         mrb_get_args(mrb, "i", &button);
-        DFBInputDeviceButtonState state;
-        DFBResult ret = device->GetButtonState(device, button, &state);
+        ret = device->GetButtonState(device, button, &state);
         if (!ret) {
             return mrb_fixnum_value(state);
         }
@@ -227,10 +232,11 @@ static mrb_value input_device_get_axis(mrb_state *mrb, mrb_value self)
 {
     IDirectFBInputDevice* device = mrb_directfb_input_device(mrb, self);
     if (device != NULL) {
+        DFBResult ret;
+        int pos;
         mrb_int axis;
         mrb_get_args(mrb, "i", &axis);
-        int pos;
-        DFBResult ret = device->GetAxis(device, axis, &pos);
+        ret = device->GetAxis(device, axis, &pos);
         if (!ret) {
             return mrb_fixnum_value(pos);
         }

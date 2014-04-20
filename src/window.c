@@ -47,17 +47,17 @@ mrb_value mrb_directfb_window_value(mrb_state* mrb, IDirectFBWindow* window)
 
 mrb_value mrb_directfb_window_wrap(mrb_state* mrb, struct RClass* c, IDirectFBWindow* window)
 {
+    struct mrb_directfb_window_data* data = mrb_malloc(mrb, sizeof(struct mrb_directfb_window_data));
+
     int width = 0;
     int height = 0;
     window->GetSize(window, &width, &height);
 
-    struct mrb_directfb_window_data* data = mrb_malloc(mrb, sizeof(struct mrb_directfb_window_data));
     data->window = window;
     data->width  = width;
     data->height = height;
 
-    mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_window_type, data));
-    return obj;
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_window_type, data));
 }
 
 IDirectFBWindow* mrb_directfb_window(mrb_state *mrb, mrb_value value)
@@ -146,9 +146,10 @@ static mrb_value window_attach_event_buffer(mrb_state *mrb, mrb_value self)
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
     DFBResult ret = -1;
     if (window != NULL) {
+        IDirectFBEventBuffer* buffer = NULL;
         mrb_value buffer_object;
         mrb_get_args(mrb, "o", &buffer_object);
-        IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
+        buffer = mrb_directfb_event_buffer(mrb, buffer_object);
         ret = window->AttachEventBuffer(window, buffer);
     }
     return mrb_fixnum_value(ret);
@@ -160,9 +161,10 @@ static mrb_value window_detach_event_buffer(mrb_state *mrb, mrb_value self)
 
     DFBResult ret = -1;
     if (window != NULL) {
+        IDirectFBEventBuffer* buffer = NULL;
         mrb_value buffer_object;
         mrb_get_args(mrb, "o", &buffer_object);
-        IDirectFBEventBuffer* buffer = mrb_directfb_event_buffer(mrb, buffer_object);
+        buffer = mrb_directfb_event_buffer(mrb, buffer_object);
         ret = window->DetachEventBuffer(window, buffer);
     }
     return mrb_fixnum_value(ret);
@@ -298,11 +300,12 @@ static mrb_value window_set_cursor_shape(mrb_state *mrb, mrb_value self)
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
     DFBResult ret = -1;
     if (window != NULL) {
+        IDirectFBSurface* surface = NULL;
         mrb_value surface_object;
         mrb_int hot_x, hot_y;
         mrb_get_args(mrb, "oii", &surface_object, &hot_x, &hot_y);
 
-        IDirectFBSurface* surface = mrb_directfb_surface(mrb, surface_object);
+        surface = mrb_directfb_surface(mrb, surface_object);
         ret = window->SetCursorShape(window, surface, hot_x, hot_y);
         if (!ret) {
             mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "cursor_shape"), surface_object);
@@ -483,9 +486,10 @@ static mrb_value window_put_atop(mrb_state *mrb, mrb_value self)
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
     DFBResult ret = -1;
     if (window != NULL) {
+        IDirectFBWindow* lower = NULL;
         mrb_value lower_object;
         mrb_get_args(mrb, "o", &lower_object);
-        IDirectFBWindow* lower = mrb_directfb_window(mrb, lower_object);
+        lower = mrb_directfb_window(mrb, lower_object);
         ret = window->PutAtop(window, lower);
     }
     return mrb_fixnum_value(ret);
@@ -496,9 +500,10 @@ static mrb_value window_put_below(mrb_state *mrb, mrb_value self)
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
     DFBResult ret = -1;
     if (window != NULL) {
+        IDirectFBWindow* below = NULL;
         mrb_value below_object;
         mrb_get_args(mrb, "o", &below_object);
-        IDirectFBWindow* below = mrb_directfb_window(mrb, below_object);
+        below = mrb_directfb_window(mrb, below_object);
         ret = window->PutBelow(window, below);
     }
     return mrb_fixnum_value(ret);
@@ -553,10 +558,11 @@ static mrb_value window_bind(mrb_state *mrb, mrb_value self)
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
     DFBResult ret = -1;
     if (window != NULL) {
+        IDirectFBWindow* w;
         mrb_value window_object;
         mrb_int x, y;
         mrb_get_args(mrb, "oii", &window_object, &x, &y);
-        IDirectFBWindow* w = mrb_directfb_window(mrb, window_object);
+        w = mrb_directfb_window(mrb, window_object);
         ret = window->Bind(window, w, x, y);
         if (!ret) {
             mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "bound_window"), window_object);
@@ -570,9 +576,10 @@ static mrb_value window_unbind(mrb_state *mrb, mrb_value self)
     IDirectFBWindow* window = mrb_directfb_window(mrb, self);
     DFBResult ret = -1;
     if (window != NULL) {
+        IDirectFBWindow* w;
         mrb_value window_object;
         mrb_get_args(mrb, "o", &window_object);
-        IDirectFBWindow* w = mrb_directfb_window(mrb, window_object);
+        w = mrb_directfb_window(mrb, window_object);
         ret = window->Unbind(window, w);
         if (!ret) {
             mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "bound_window"), mrb_nil_value());

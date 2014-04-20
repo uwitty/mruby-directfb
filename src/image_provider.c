@@ -48,8 +48,7 @@ mrb_value mrb_directfb_image_provider_wrap(mrb_state* mrb, struct RClass* c, IDi
     struct mrb_directfb_image_provider_data* data = mrb_malloc(mrb, sizeof(struct mrb_directfb_image_provider_data));
     data->image_provider = image_provider;
 
-    mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_image_provider_type, data));
-    return obj;
+    return mrb_obj_value(Data_Wrap_Struct(mrb, c, &mrb_directfb_image_provider_type, data));
 }
 
 IDirectFBImageProvider* mrb_directfb_image_provider(mrb_state *mrb, mrb_value value)
@@ -90,9 +89,10 @@ static mrb_value image_provider_get_surface_description(mrb_state *mrb, mrb_valu
 {
     IDirectFBImageProvider* provider = mrb_directfb_image_provider(mrb, self);
     if (provider != NULL) {
+        DFBResult  ret;
         DFBSurfaceDescription desc;
         memset(&desc, 0, sizeof(desc));
-        DFBResult ret = provider->GetSurfaceDescription(provider, &desc);
+        ret = provider->GetSurfaceDescription(provider, &desc);
         if (!ret) {
             return mrb_directfb_surface_description_new(mrb, &desc);
         }
@@ -104,9 +104,10 @@ static mrb_value image_provider_get_image_description(mrb_state *mrb, mrb_value 
 {
     IDirectFBImageProvider* provider = mrb_directfb_image_provider(mrb, self);
     if (provider != NULL) {
+        DFBResult ret;
         DFBImageDescription desc;
         memset(&desc, 0, sizeof(desc));
-        DFBResult ret = provider->GetImageDescription(provider, &desc);
+        ret = provider->GetImageDescription(provider, &desc);
         if (!ret) {
             return mrb_directfb_image_description_new(mrb, &desc);
         }
@@ -155,12 +156,13 @@ static mrb_value image_provider_set_render_callback(mrb_state *mrb, mrb_value se
     DFBResult ret = -1;
     IDirectFBImageProvider* provider = mrb_directfb_image_provider(mrb, self);
     if (provider != NULL) {
+        struct mrb_directfb_image_provider_data* data = NULL;
         mrb_value block;
         mrb_get_args(mrb, "&", &block);
 
-        struct mrb_directfb_image_provider_data* data = setup_render_callback(mrb, self, block);
+        data = setup_render_callback(mrb, self, block);
         ret = provider->SetRenderCallback(provider, render_callback, data);
-        printf("end:%s()\n", __func__);
+        //printf("end:%s()\n", __func__);
     }
     return mrb_fixnum_value(ret);
 }
@@ -170,13 +172,15 @@ static mrb_value image_provider_write_back(mrb_state *mrb, mrb_value self)
     DFBResult ret = -1;
     IDirectFBImageProvider* provider = mrb_directfb_image_provider(mrb, self);
     if (provider != NULL) {
+        IDirectFBSurface* surface = NULL;
+        DFBRectangle* rect = NULL;
         mrb_value surface_object;
         mrb_value rect_object;
         char* filename;
         mrb_get_args(mrb, "ooz", &surface_object, &rect_object, &filename);
 
-        IDirectFBSurface* surface = mrb_directfb_surface(mrb, surface_object);
-        DFBRectangle* rect = mrb_directfb_rectangle(mrb, rect_object);
+        surface = mrb_directfb_surface(mrb, surface_object);
+        rect = mrb_directfb_rectangle(mrb, rect_object);
         ret = provider->WriteBack(provider, surface, rect, filename);
     }
     return mrb_fixnum_value(ret);

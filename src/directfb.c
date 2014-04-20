@@ -69,19 +69,21 @@ static mrb_value directfb_init(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_error(mrb_state *mrb, mrb_value self)
 {
+    DFBResult ret;
     char* m;
     mrb_value v;
     mrb_get_args(mrb, "zi", &m, &v);
-    DFBResult ret = DirectFBError(m, mrb_fixnum(v));
+    ret = DirectFBError(m, mrb_fixnum(v));
     return mrb_fixnum_value(ret);
 }
 
 static mrb_value directfb_set_option(mrb_state *mrb, mrb_value self)
 {
+    DFBResult ret;
     char* name;
     char* value;
     mrb_get_args(mrb, "zz", &name, &value);
-    DFBResult ret = DirectFBSetOption(name, value);
+    ret = DirectFBSetOption(name, value);
     return mrb_fixnum_value(ret);
 }
 
@@ -116,11 +118,12 @@ static mrb_value directfb_release(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_set_cooperative_level(mrb_state *mrb, mrb_value self)
 {
+    DFBResult ret = -1;
+    IDirectFB* dfb = get_directfb(mrb, self);
+
     mrb_int level;
     mrb_get_args(mrb, "i", &level);
 
-    DFBResult ret = -1;
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
         ret = dfb->SetCooperativeLevel(dfb, level);
     }
@@ -129,13 +132,14 @@ static mrb_value directfb_set_cooperative_level(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_set_video_mode(mrb_state *mrb, mrb_value self)
 {
+    DFBResult ret = -1;
+    IDirectFB* dfb = get_directfb(mrb, self);
+
     mrb_int width;
     mrb_int height;
     mrb_int bpp;
     mrb_get_args(mrb, "iii", &width, &height, &bpp);
 
-    DFBResult ret = -1;
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
         ret = dfb->SetVideoMode(dfb, width, height, bpp);
     }
@@ -175,11 +179,12 @@ static DFBEnumerationResult enum_video_modes_callback(int width, int height, int
 
 static mrb_value directfb_enum_video_modes(mrb_state *mrb, mrb_value self)
 {
+    IDirectFB* dfb = get_directfb(mrb, self);
     DFBResult ret = -1;
+
     mrb_value block;
     mrb_get_args(mrb, "&", &block);
 
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
         struct enum_video_modes_callback_arg arg = {mrb, &block};
         ret = dfb->EnumVideoModes(dfb, enum_video_modes_callback, (void*)&arg);
@@ -189,19 +194,21 @@ static mrb_value directfb_enum_video_modes(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_create_surface(mrb_state *mrb, mrb_value self)
 {
+    DFBSurfaceDescription desc;
+    IDirectFB* dfb = get_directfb(mrb, self);
+    IDirectFBSurface* surface = NULL;
+    DFBResult ret;
+
     mrb_value desc_object;
     mrb_get_args(mrb, "o", &desc_object);
 
-    DFBSurfaceDescription desc;
     mrb_directfb_surface_description_get(mrb, desc_object, &desc);
 
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb == NULL) {
         return mrb_nil_value();
     }
 
-    IDirectFBSurface* surface = NULL;
-    DFBResult ret = dfb->CreateSurface(dfb, &desc, &surface);
+    ret = dfb->CreateSurface(dfb, &desc, &surface);
     if (ret) {
         //DirectFBError("CreateSurface", ret);
         return mrb_nil_value();
@@ -229,11 +236,12 @@ static DFBEnumerationResult enum_screens_callback(DFBScreenID id, DFBScreenDescr
 
 static mrb_value directfb_enum_screens(mrb_state *mrb, mrb_value self)
 {
+    IDirectFB* dfb = get_directfb(mrb, self);
     DFBResult ret = -1;
+
     mrb_value block;
     mrb_get_args(mrb, "&", &block);
 
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
         struct enum_screens_callback_arg arg = {mrb, &block};
         ret = dfb->EnumScreens(dfb, enum_screens_callback, (void*)&arg);
@@ -260,11 +268,12 @@ static DFBEnumerationResult enum_display_layers_callback(DFBDisplayLayerID id, D
 
 static mrb_value directfb_enum_display_layers(mrb_state *mrb, mrb_value self)
 {
+    IDirectFB* dfb = get_directfb(mrb, self);
+
     DFBResult ret = -1;
     mrb_value block;
     mrb_get_args(mrb, "&", &block);
 
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
         struct enum_display_layers_callback_arg arg = {mrb, &block};
         ret = dfb->EnumDisplayLayers(dfb, enum_display_layers_callback, (void*)&arg);
@@ -274,10 +283,12 @@ static mrb_value directfb_enum_display_layers(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_get_display_layer(mrb_state *mrb, mrb_value self)
 {
+    struct mrb_directfb_data* data = NULL;
+
     mrb_int layer_id;
     mrb_get_args(mrb, "i", &layer_id);
 
-    struct mrb_directfb_data* data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_type, struct mrb_directfb_data);
+    data = DATA_CHECK_GET_PTR(mrb, self, &mrb_directfb_type, struct mrb_directfb_data);
     if (data->dfb != NULL) {
         IDirectFBDisplayLayer* layer;
         DFBResult ret = data->dfb->GetDisplayLayer(data->dfb, layer_id, &layer);
@@ -305,11 +316,12 @@ static DFBEnumerationResult enum_input_devices_callback(DFBInputDeviceID device_
 
 static mrb_value directfb_enum_input_devices(mrb_state *mrb, mrb_value self)
 {
+    IDirectFB* dfb = get_directfb(mrb, self);
+
     DFBResult ret = -1;
     mrb_value block;
     mrb_get_args(mrb, "&", &block);
 
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
         struct enum_input_devices_callback_arg arg = {mrb, &block};
         ret = dfb->EnumInputDevices(dfb, enum_input_devices_callback, (void*)&arg);
@@ -321,10 +333,11 @@ static mrb_value directfb_get_input_device(mrb_state *mrb, mrb_value self)
 {
     IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
+        DFBResult ret;
+        IDirectFBInputDevice* device;
         mrb_int device_id;
         mrb_get_args(mrb, "i", &device_id);
-        IDirectFBInputDevice* device;
-        DFBResult ret = dfb->GetInputDevice(dfb, device_id, &device);
+        ret = dfb->GetInputDevice(dfb, device_id, &device);
         if (!ret) {
             return mrb_directfb_input_device_value(mrb, device);
         }
@@ -349,12 +362,14 @@ static mrb_value directfb_create_input_event_buffer(mrb_state *mrb, mrb_value se
 {
     IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
+        DFBResult ret;
+        IDirectFBEventBuffer* buffer;
+        DFBBoolean global;
         mrb_int caps;
         mrb_bool b;
         mrb_get_args(mrb, "ib", &caps, &b);
-        DFBBoolean global = (b != FALSE)? DFB_TRUE : DFB_FALSE;
-        IDirectFBEventBuffer* buffer;
-        DFBResult ret = dfb->CreateInputEventBuffer(dfb, caps, global, &buffer);
+        global = (b != FALSE)? DFB_TRUE : DFB_FALSE;
+        ret = dfb->CreateInputEventBuffer(dfb, caps, global, &buffer);
         if (!ret) {
             return mrb_directfb_event_buffer_value(mrb, buffer);
         }
@@ -366,11 +381,12 @@ static mrb_value directfb_create_image_provider(mrb_state *mrb, mrb_value self)
 {
     IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
+        DFBResult ret;
+        IDirectFBImageProvider* provider;
         char* filename;
         mrb_get_args(mrb, "z", &filename);
 
-        IDirectFBImageProvider* provider;
-        DFBResult ret = dfb->CreateImageProvider(dfb, filename, &provider);
+        ret = dfb->CreateImageProvider(dfb, filename, &provider);
         if (!ret) {
             return mrb_directfb_image_provider_value(mrb, provider);
         }
@@ -382,11 +398,12 @@ static mrb_value directfb_create_video_provider(mrb_state *mrb, mrb_value self)
 {
     IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
+        DFBResult ret;
+        IDirectFBVideoProvider* provider;
         char* filename;
         mrb_get_args(mrb, "z", &filename);
 
-        IDirectFBVideoProvider* provider;
-        DFBResult ret = dfb->CreateVideoProvider(dfb, filename, &provider);
+        ret = dfb->CreateVideoProvider(dfb, filename, &provider);
         if (!ret) {
             return mrb_directfb_video_provider_value(mrb, provider);
         }
@@ -396,12 +413,12 @@ static mrb_value directfb_create_video_provider(mrb_state *mrb, mrb_value self)
 
 static mrb_value directfb_create_font(mrb_state *mrb, mrb_value self)
 {
+    IDirectFB* dfb = get_directfb(mrb, self);
     char* fontname;
     mrb_value desc_object;
 
     mrb_get_args(mrb, "zo", &fontname, &desc_object);
 
-    IDirectFB* dfb = get_directfb(mrb, self);
     if (dfb != NULL) {
         IDirectFBFont* font;
         DFBFontDescription desc;

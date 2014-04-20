@@ -35,28 +35,33 @@ mrb_value mrb_directfb_input_device_description_new(mrb_state *mrb, const DFBInp
 
 void mrb_directfb_surface_description_get(mrb_state *mrb, mrb_value hash, DFBSurfaceDescription* desc)
 {
-    memset(desc, 0, sizeof(*desc));
     mrb_value caps = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")));
+    mrb_value width;
+    mrb_value height;
+    mrb_value pixelformat;
+    mrb_value resource_id;
+
+    memset(desc, 0, sizeof(*desc));
     if (!mrb_nil_p(caps)) {
         desc->flags |= DSDESC_CAPS;
         desc->caps = mrb_fixnum(caps);
     }
-    mrb_value width = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "width")));
+    width = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "width")));
     if (!mrb_nil_p(width)) {
         desc->flags |= DSDESC_WIDTH;
         desc->width = mrb_fixnum(width);
     }
-    mrb_value height = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "height")));
+    height = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "height")));
     if (!mrb_nil_p(height)) {
         desc->flags |= DSDESC_HEIGHT;
         desc->height = mrb_fixnum(height);
     }
-    mrb_value pixelformat = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "pixelformat")));
+    pixelformat = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "pixelformat")));
     if (!mrb_nil_p(pixelformat)) {
         desc->flags |= DSDESC_PIXELFORMAT;
         desc->pixelformat = mrb_fixnum(pixelformat);
     }
-    mrb_value resource_id = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "resource_id")));
+    resource_id = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "resource_id")));
     if (!mrb_nil_p(resource_id)) {
         desc->flags |= DSDESC_RESOURCE_ID;
         desc->resource_id = mrb_fixnum(resource_id);
@@ -130,15 +135,20 @@ mrb_value mrb_directfb_image_description_new(mrb_state *mrb, const DFBImageDescr
 
 void mrb_directfb_image_description_get(mrb_state *mrb, mrb_value hash, DFBImageDescription* desc)
 {
+    mrb_value caps;
+    mrb_value colorkey_r;
+    mrb_value colorkey_g;
+    mrb_value colorkey_b;
+
     memset(desc, 0, sizeof(*desc));
 
-    mrb_value caps       = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")));
+    caps       = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "caps")));
     desc->caps = mrb_fixnum(caps);
-    mrb_value colorkey_r = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_r")));
+    colorkey_r = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_r")));
     desc->colorkey_r = mrb_fixnum(colorkey_r);
-    mrb_value colorkey_g = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_g")));
+    colorkey_g = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_g")));
     desc->colorkey_g = mrb_fixnum(colorkey_g);
-    mrb_value colorkey_b = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_b")));
+    colorkey_b = mrb_hash_get(mrb, hash, mrb_symbol_value(mrb_intern_cstr(mrb, "colorkey_b")));
     desc->colorkey_b = mrb_fixnum(colorkey_b);
 
 #if 1
@@ -206,12 +216,12 @@ void mrb_directfb_display_layer_configuration_get(mrb_state *mrb, mrb_value valu
 mrb_value mrb_directfb_graphics_device_description_new(mrb_state *mrb, const DFBGraphicsDeviceDescription* desc)
 {
     mrb_value driver = mrb_hash_new(mrb);
+    mrb_value value = mrb_hash_new(mrb);
+
     mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "major")), mrb_fixnum_value(desc->driver.major));
     mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "minor")), mrb_fixnum_value(desc->driver.minor));
     mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "name")), mrb_str_new_cstr(mrb, desc->driver.name));
     mrb_hash_set(mrb, driver, mrb_symbol_value(mrb_intern_cstr(mrb, "vendor")), mrb_str_new_cstr(mrb, desc->driver.vendor));
-
-    mrb_value value = mrb_hash_new(mrb);
 
     mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "acceleration_mask")), mrb_fixnum_value(desc->acceleration_mask));
     mrb_hash_set(mrb, value, mrb_symbol_value(mrb_intern_cstr(mrb, "blitting_flags")), mrb_fixnum_value(desc->blitting_flags));

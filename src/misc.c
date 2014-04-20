@@ -178,9 +178,10 @@ static mrb_value rectangle_h(mrb_state *mrb, mrb_value self)
 
 static mrb_value rectangle_x_set(mrb_state *mrb, mrb_value self)
 {
+    DFBRectangle* rect = NULL;
     mrb_int x;
     mrb_get_args(mrb, "i", &x);
-    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
+    rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->x = x;
     }
@@ -189,9 +190,10 @@ static mrb_value rectangle_x_set(mrb_state *mrb, mrb_value self)
 
 static mrb_value rectangle_y_set(mrb_state *mrb, mrb_value self)
 {
+    DFBRectangle* rect = NULL;
     mrb_int y;
     mrb_get_args(mrb, "i", &y);
-    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
+    rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->y = y;
     }
@@ -200,9 +202,10 @@ static mrb_value rectangle_y_set(mrb_state *mrb, mrb_value self)
 
 static mrb_value rectangle_w_set(mrb_state *mrb, mrb_value self)
 {
+    DFBRectangle* rect = NULL;
     mrb_int w;
     mrb_get_args(mrb, "i", &w);
-    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
+    rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->w = w;
     }
@@ -211,9 +214,10 @@ static mrb_value rectangle_w_set(mrb_state *mrb, mrb_value self)
 
 static mrb_value rectangle_h_set(mrb_state *mrb, mrb_value self)
 {
+    DFBRectangle* rect = NULL;
     mrb_int h;
     mrb_get_args(mrb, "i", &h);
-    DFBRectangle* rect = mrb_directfb_rectangle(mrb, self);
+    rect = mrb_directfb_rectangle(mrb, self);
     if (rect != NULL) {
         rect->h = h;
     }
@@ -772,9 +776,9 @@ mrb_value mrb_directfb_event_value(mrb_state* mrb, DFBEvent* event)
 
 void mrb_directfb_event(mrb_state* mrb, mrb_value event_object, DFBEvent* event)
 {
-    memset(event, 0, sizeof(*event));
-
     DFBEvent* e = NULL;
+
+    memset(event, 0, sizeof(*event));
 
     if (   ((e = (DFBEvent*)mrb_directfb_input_event(mrb, event_object)) != NULL)
         || ((e = (DFBEvent*)mrb_directfb_get_window_event(mrb, event_object)) != NULL)

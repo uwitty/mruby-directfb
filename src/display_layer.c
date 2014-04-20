@@ -102,29 +102,34 @@ static mrb_value display_layer_get_description(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_get_source_descriptions(mrb_state *mrb, mrb_value self)
 {
+    DFBResult ret = -1;
+    DFBDisplayLayerDescription desc;
+    int num = 0;
     IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
+    DFBDisplayLayerSourceDescription* descs = NULL;
+    mrb_value* values = NULL;
+
     if (layer == NULL) {
         return mrb_nil_value();
     }
 
-    DFBResult ret = -1;
-    DFBDisplayLayerDescription desc;
     ret = layer->GetDescription(layer, &desc);
     if (ret || (desc.sources <= 0)) {
         return mrb_nil_value();
     }
 
-    int num = desc.sources;
-    DFBDisplayLayerSourceDescription* descs = (DFBDisplayLayerSourceDescription*)mrb_malloc(mrb, num * sizeof(DFBDisplayLayerSourceDescription));
-    mrb_value* values = (mrb_value*)mrb_malloc(mrb, num * sizeof(mrb_value));
+    num = desc.sources;
+    descs = (DFBDisplayLayerSourceDescription*)mrb_malloc(mrb, num * sizeof(DFBDisplayLayerSourceDescription));
+    values = (mrb_value*)mrb_malloc(mrb, num * sizeof(mrb_value));
 
     ret = layer->GetSourceDescriptions(layer, descs);
     if ((descs == NULL) || (values == NULL) || (!ret)) {
+        mrb_value a;
         int i;
         for (i = 0; i < num; i++) {
             values[i] = mrb_directfb_display_layer_source_description_new(mrb, &descs[i]);
         }
-        mrb_value a = mrb_ary_new_from_values(mrb, num, values);
+        a = mrb_ary_new_from_values(mrb, num, values);
         mrb_free(mrb, values);
         mrb_free(mrb, descs);
         return a;
@@ -168,10 +173,11 @@ static mrb_value display_layer_get_surface(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_set_cooperative_level(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
+
     mrb_int cooperative_level;
     mrb_get_args(mrb, "i", &cooperative_level);
 
-    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         layer->SetCooperativeLevel(layer, cooperative_level);
     }
@@ -194,11 +200,12 @@ static mrb_value display_layer_get_configuration(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_set_configuration(mrb_state *mrb, mrb_value self)
 {
+    DFBResult ret = -1;
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
+
     mrb_value config_object;
     mrb_get_args(mrb, "o", &config_object);
 
-    DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         DFBDisplayLayerConfig conf;
         mrb_directfb_display_layer_configuration_get(mrb, config_object, &conf);
@@ -210,15 +217,16 @@ static mrb_value display_layer_set_configuration(mrb_state *mrb, mrb_value self)
 
 static mrb_value display_layer_test_configuration(mrb_state *mrb, mrb_value self)
 {
+    DFBResult ret = -1;
+    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
+
     mrb_value config_object;
     mrb_get_args(mrb, "o", &config_object);
 
-    DFBResult ret = -1;
-    IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
         DFBDisplayLayerConfig conf;
-        mrb_directfb_display_layer_configuration_get(mrb, config_object, &conf);
         DFBDisplayLayerConfigFlags failed;
+        mrb_directfb_display_layer_configuration_get(mrb, config_object, &conf);
         ret = layer->TestConfiguration(layer, &conf, &failed);
         if (!ret) {
             return mrb_fixnum_value(failed);
@@ -321,10 +329,11 @@ static mrb_value display_layer_set_cursor_shape(mrb_state *mrb, mrb_value self)
     DFBResult ret = -1;
     IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
+        IDirectFBSurface* shape = NULL;
         mrb_value shape_object;
         mrb_int hot_x, hot_y;
         mrb_get_args(mrb, "oii", &shape_object, &hot_x, &hot_y);
-        IDirectFBSurface* shape = mrb_directfb_surface(mrb, shape_object);
+        shape = mrb_directfb_surface(mrb, shape_object);
         ret = layer->SetCursorShape(layer, shape, hot_x, hot_y);
     }
     return mrb_fixnum_value(ret);
@@ -357,9 +366,10 @@ static mrb_value display_layer_switch_context(mrb_state *mrb, mrb_value self)
     DFBResult ret = -1;
     IDirectFBDisplayLayer* layer = mrb_directfb_display_layer(mrb, self);
     if (layer != NULL) {
+        DFBBoolean exclusive;
         mrb_bool b;
         mrb_get_args(mrb, "b", &b);
-        DFBBoolean exclusive = (b != FALSE)? DFB_TRUE : DFB_FALSE;
+        exclusive = (b != FALSE)? DFB_TRUE : DFB_FALSE;
         ret = layer->SwitchContext(layer, exclusive);
     }
     return mrb_fixnum_value(ret);

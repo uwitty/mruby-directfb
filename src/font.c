@@ -120,10 +120,11 @@ static mrb_value font_get_max_advance(mrb_state *mrb, mrb_value self)
 
 static mrb_value font_get_kerning_x(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+
     mrb_int prev, current;
     mrb_get_args(mrb, "ii", &prev, &current);
 
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         int kern_x, kern_y;
         if (!font->GetKerning(font, prev, current, &kern_x, &kern_y)) {
@@ -135,10 +136,11 @@ static mrb_value font_get_kerning_x(mrb_state *mrb, mrb_value self)
 
 static mrb_value font_get_kerning_y(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+
     mrb_int prev, current;
     mrb_get_args(mrb, "ii", &prev, &current);
 
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         int kern_x, kern_y;
         if (!font->GetKerning(font, prev, current, &kern_x, &kern_y)) {
@@ -150,12 +152,15 @@ static mrb_value font_get_kerning_y(mrb_state *mrb, mrb_value self)
 
 static mrb_value font_get_string_width(mrb_state *mrb, mrb_value self)
 {
-    char* s;
-    mrb_get_args(mrb, "z", &s);
-    int bytes = strlen(s);
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+    int bytes = 0;
     int width;
 
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+    char* s;
+    mrb_get_args(mrb, "z", &s);
+
+    bytes = strlen(s);
+
     if (font != NULL) {
         if (!font->GetStringWidth(font, s, bytes, &width)) {
             return mrb_fixnum_value(width);
@@ -166,11 +171,13 @@ static mrb_value font_get_string_width(mrb_state *mrb, mrb_value self)
 
 static mrb_value font_get_string_extents(mrb_state *mrb, mrb_value self)
 {
-    char* s;
-    mrb_get_args(mrb, "z", &s);
-    int bytes = strlen(s);
-
     IDirectFBFont* font = mrb_directfb_font(mrb, self);
+    int bytes = 0;
+    char* s;
+
+    mrb_get_args(mrb, "z", &s);
+    bytes = strlen(s);
+
     if (font != NULL) {
         DFBRectangle logical_rect, ink_rect;
         if (!font->GetStringExtents(font, s, bytes, &logical_rect, &ink_rect)) {
@@ -185,10 +192,11 @@ static mrb_value font_get_string_extents(mrb_state *mrb, mrb_value self)
 
 static mrb_value font_get_glyph_extents(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+
     mrb_int c;
     mrb_get_args(mrb, "i", &c);
 
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         DFBRectangle rect;
         int advance;
@@ -232,22 +240,22 @@ static const char* correct_next_line(const char* first_pos, const char* str)
 
 static mrb_value font_get_string_break(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+    int bytes = 0;
+
     char* s;
     mrb_int max_width;
     mrb_get_args(mrb, "zi", &s, &max_width);
 
-    printf("-- %s %d\n", s, max_width);
+    bytes = strlen(s);
 
-    int bytes = strlen(s);
-
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         int ret_width;
         int ret_string_length;
         const char* next_line;
         if (!font->GetStringBreak(font, s, bytes, max_width, &ret_width, &ret_string_length, &next_line)) {
-            next_line = correct_next_line(s, next_line);
             mrb_value values[3];
+            next_line = correct_next_line(s, next_line);
             values[0] = mrb_fixnum_value(ret_width);
             values[1] = mrb_fixnum_value(ret_string_length);
             values[2] = mrb_str_new_cstr(mrb, next_line);
@@ -259,10 +267,11 @@ static mrb_value font_get_string_break(mrb_state *mrb, mrb_value self)
 
 static mrb_value font_set_encoding(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+
     mrb_int encoding;
     mrb_get_args(mrb, "i", &encoding);
 
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         font->SetEncoding(font, encoding);
     }
@@ -286,11 +295,11 @@ static DFBEnumerationResult enum_encoding_callback(DFBTextEncodingID device_id, 
 
 static mrb_value font_enum_encodings(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     DFBResult ret = -1;
     mrb_value block;
     mrb_get_args(mrb, "&", &block);
 
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         struct enum_encoding_callback_arg arg = {mrb, &block};
         ret = font->EnumEncodings(font, enum_encoding_callback, (void*)&arg);
@@ -301,10 +310,11 @@ static mrb_value font_enum_encodings(mrb_state *mrb, mrb_value self)
 
 static mrb_value font_find_encoding(mrb_state *mrb, mrb_value self)
 {
+    IDirectFBFont* font = mrb_directfb_font(mrb, self);
+
     char* name;
     mrb_get_args(mrb, "z", &name);
 
-    IDirectFBFont* font = mrb_directfb_font(mrb, self);
     if (font != NULL) {
         DFBTextEncodingID encoding_id;
         if (!font->FindEncoding(font, name, &encoding_id)) {
