@@ -35,5 +35,6 @@ DirectFB.run() do |dfb, layer, primary|
   end
 
   logo.release
+  keyboard.release
 end
 
