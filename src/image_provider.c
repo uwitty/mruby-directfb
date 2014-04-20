@@ -186,6 +186,7 @@ void mrb_directfb_define_image_provider(mrb_state* mrb, struct RClass* outer)
 {
     // def DirectFB::ImageProvider
     struct RClass* image_provider = mrb_define_class_under(mrb, outer, "ImageProvider", mrb->object_class);
+    MRB_SET_INSTANCE_TT(image_provider, MRB_TT_DATA);
 
     mrb_define_method(mrb, image_provider, "release", image_provider_release, MRB_ARGS_NONE());
     mrb_define_method(mrb, image_provider, "get_surface_description", image_provider_get_surface_description, MRB_ARGS_NONE());

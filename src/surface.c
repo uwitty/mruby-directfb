@@ -497,6 +497,7 @@ void mrb_directfb_define_surface(mrb_state* mrb, struct RClass* outer)
     // def DirectFB::Surface
     struct RClass* surface = NULL;
     surface = mrb_define_class_under(mrb, outer, "Surface", mrb->object_class);
+    MRB_SET_INSTANCE_TT(surface, MRB_TT_DATA);
 
     mrb_define_method(mrb, surface, "release", surface_release, MRB_ARGS_NONE());
 

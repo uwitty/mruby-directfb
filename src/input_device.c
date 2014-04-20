@@ -259,6 +259,7 @@ void mrb_directfb_define_input_device(mrb_state* mrb, struct RClass* outer)
 {
     // def DirectFB::InputDevice
     struct RClass* input_device = mrb_define_class_under(mrb, outer, "InputDevice", mrb->object_class);
+    MRB_SET_INSTANCE_TT(input_device, MRB_TT_DATA);
 
     mrb_define_method(mrb, input_device, "release", input_device_release, MRB_ARGS_NONE());
     mrb_define_method(mrb, input_device, "get_id", input_device_get_id, MRB_ARGS_NONE());

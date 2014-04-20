@@ -477,6 +477,7 @@ void mrb_directfb_define_video_provider(mrb_state* mrb, struct RClass* outer)
 {
     // def DirectFB::VideoProvider
     struct RClass* video_provider = mrb_define_class_under(mrb, outer, "VideoProvider", mrb->object_class);
+    MRB_SET_INSTANCE_TT(video_provider, MRB_TT_DATA);
 
     mrb_define_method(mrb, video_provider, "release", video_provider_release, MRB_ARGS_NONE());
 

@@ -318,6 +318,7 @@ void mrb_directfb_define_font(mrb_state* mrb, struct RClass* outer)
 {
     // def DirectFB::Font
     struct RClass* font = mrb_define_class_under(mrb, outer, "Font", mrb->object_class);
+    MRB_SET_INSTANCE_TT(font, MRB_TT_DATA);
 
     mrb_define_method(mrb, font, "release", font_release, MRB_ARGS_NONE());
     mrb_define_method(mrb, font, "get_ascender", font_get_ascender, MRB_ARGS_NONE());

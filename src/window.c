@@ -586,6 +586,7 @@ void mrb_directfb_define_window(mrb_state* mrb, struct RClass* outer)
     // def DirectFB::Window
     struct RClass* window = NULL;
     window = mrb_define_class_under(mrb, outer, "Window", mrb->object_class);
+    MRB_SET_INSTANCE_TT(window, MRB_TT_DATA);
 
     mrb_define_method(mrb, window, "release", window_release, MRB_ARGS_NONE());
 

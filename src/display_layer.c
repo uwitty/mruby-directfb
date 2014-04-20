@@ -380,6 +380,7 @@ static mrb_value display_layer_set_rotation(mrb_state *mrb, mrb_value self)
 void mrb_directfb_define_display_layer(mrb_state* mrb, struct RClass* outer)
 {
     struct RClass* display_layer = mrb_define_class_under(mrb, outer, "DisplayLayer", mrb->object_class);
+    MRB_SET_INSTANCE_TT(display_layer, MRB_TT_DATA);
 
     mrb_define_method(mrb, display_layer, "release", display_layer_release, MRB_ARGS_NONE());
 

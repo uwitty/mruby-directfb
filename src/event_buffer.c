@@ -204,6 +204,7 @@ void mrb_directfb_define_event_buffer(mrb_state* mrb, struct RClass* outer)
 {
     // def DirectFB::EventBuffer
     struct RClass* event_buffer = mrb_define_class_under(mrb, outer, "EventBuffer", mrb->object_class);
+    MRB_SET_INSTANCE_TT(event_buffer, MRB_TT_DATA);
 
     mrb_define_method(mrb, event_buffer, "release", event_buffer_release, MRB_ARGS_NONE());
     mrb_define_method(mrb, event_buffer, "reset", event_buffer_reset, MRB_ARGS_NONE());
