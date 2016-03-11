@@ -217,7 +217,7 @@ static mrb_value surface_lock(mrb_state *mrb, mrb_value self)
         ret = surface->Lock(surface, flags, &p, &pitch);
         if (!ret) {
             mrb_value a[2];
-            a[0] = mrb_voidp_value(mrb, p);
+            a[0] = mrb_cptr_value(mrb, p);
             a[1] = mrb_fixnum_value(pitch);
             return mrb_ary_new_from_values(mrb, 2, a);
         }
